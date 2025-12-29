@@ -71,6 +71,14 @@
   relative: "parent",
 )
 
+#let black-gradient = gradient.linear(
+  rgb("#000000").transparentize(90%),
+  rgb("#000000").transparentize(20%),
+  rgb("#000000").transparentize(10%),
+  rgb("#000000").transparentize(10%),
+)
+
+
 // #let bullet() = {
 //   #text(white)[#sym.circle.filled]
 // }
@@ -126,10 +134,17 @@
   ]
 ]
 
-#let my-new-section(name) = slide[
+#let my-new-section(name, time) = slide[
   #set align(center + horizon)
   #set text(fill: sunset-gradient, weight: "bold")
-  #toolbox.register-section(name)
+  // 1. Create the look for the Table of Contents entry here
+  #let toc-entry = [
+    #name
+    #h(1fr) // Spacer
+    #text(size: 0.7em, weight: "thin")[#time] // Formatting for time
+  ]
+  // 2. Register the pre-formatted content
+  #toolbox.register-section(toc-entry)
   #box(
     stroke: 6pt + sunset-gradient-3,
     inset: 0.0em,
@@ -140,6 +155,7 @@
           stroke: 0.3pt + white.transparentize(50%),
           inset: 0.5em,
         )[
+          // 3. Only display the name in the big heading
           #heading(level: 1, name)
         ]
       ]
@@ -147,6 +163,53 @@
   ]
 ]
 
+#let my-new-section(name, time) = slide[
+  // 1. Define the formatted content for the list
+  #let toc-entry = [
+    #name
+    #h(1fr)
+    #text(size: 0.8em, weight: "regular")[#time]
+  ]
+
+  // 2. Register it
+  #toolbox.register-section(toc-entry)
+
+  // 3. Page / Background setup
+  #set page(margin: (x: 0em, y: 0em), background: image("at-bg.jpg", width: 100%, height: 100%, fit: "cover"))
+  #place(top + left, box(fill: black-gradient, width: 100%, height: 100%))
+
+  // 4. Content
+  #block(inset: (x: 2em, y: 1em))[
+    #title[Agenda] // Or use your nested box design here if preferred
+    #set text(fill: white)
+
+    #toolbox.side-by-side(gutter: 3mm, columns: (2fr, 2fr))[
+      // Left column content (optional)
+    ][
+      #set align(horizon)
+      #toolbox.all-sections((sections, current) => {
+        // 5. Map sections to apply fading logic
+        let formatted-items = sections.map(section => {
+          if section == current {
+            // Highlight: Full opacity, bold
+            text(opacity: 1.0, weight: "bold", section)
+          } else {
+            // Inactive: Fade out
+            text(opacity: 0.3, weight: "regular", section)
+          }
+        })
+
+        // 6. Display the list
+        enum(
+          numbering: n => block(text(fill: sunset-gradient, weight: "bold", size: 25pt)[#n]),
+          tight: false,
+          body-indent: 2em,
+          ..formatted-items,
+        )
+      })
+    ]
+  ]
+]
 
 // #let sunset-gradient = gradient.linear(
 //   // focal-center: (10%, 10%),
@@ -189,57 +252,87 @@
   Altana | 21.01.2026
 ]
 
-#let black-gradient = gradient.linear(
-  // cmyk(0%, 27%, 50%, 0%),
-  // cmyk(0%, 78%, 88%, 0%),
-  // color.hsl(28deg, 44%, 60%), // orig
-  // color.hsl(13deg, 81%, 60%), // orig
-  // color.hsl(28deg, 74%, 51%),
-  // color.hsl(13deg, 95%, 50%),
-  rgb("#000000").transparentize(90%),
-  rgb("#000000").transparentize(10%),
-  rgb("#000000").transparentize(10%),
-)
+// // TOC
+// #slide[
+//   #set page(
+//     margin: (x: 0em, y: 0em),
+//     background: image("at-bg.jpg", width: 100%, height: 100%, fit: "cover"),
+//   )
+//   #place(top + left)[
+//     #box(fill: black-gradient, width: 100%, height: 100%),
+//   ]
+//   #block(inset: (x: 2em, y: 1em))[
+//     #title[Agenda]
+//     #set text(fill: white)
+//     #toolbox.side-by-side(gutter: 3mm, columns: (2fr, 2fr))[
+//     ][
+//       #set align(horizon)
+//       #toolbox.all-sections((sections, current) => {
+//         enum(
+//           numbering: n => (
+//             block()[
+//               #text(fill: sunset-gradient, weight: "bold", size: 25pt)[#n]
+//             ]
+//           ),
+//           tight: false,
+//           body-indent: 2em,
+//           // Just spread sections. They now contain the pre-formatted Title + Time
+//           ..sections,
+//         )
+//       })
+//     ]
+//   ]
+// ]
 
-// TOC
-#slide[
-  #set page(
-    margin: (x: 0em, y: 0em),
-    background: image("at-bg.jpg", width: 100%, height: 100%, fit: "cover"),
-  )
-  #place(top + left)[
-    #box(fill: black-gradient, width: 100%, height: 100%),
+#let my-new-section(name, time) = slide[
+  // 1. Define the formatted content for the list
+  #let toc-entry = [
+    #name
+    #h(1fr)
+    #text(size: 0.8em, weight: "regular")[#time]
   ]
+
+  // 2. Register it
+  #toolbox.register-section(toc-entry)
+
+  // 3. Page / Background setup
+  #set page(margin: (x: 0em, y: 0em), background: image("at-bg.jpg", width: 100%, height: 100%, fit: "cover"))
+  #place(top + left, box(fill: black-gradient, width: 100%, height: 100%))
+
+  // 4. Content
   #block(inset: (x: 2em, y: 1em))[
-    #title[Agenda]
+    #title[Agenda] // Or use your nested box design here if preferred
     #set text(fill: white)
 
-    // #rect(
-    //   width: 100%,
-    //   height: 30pt,
-    //   fill: sunset-gradient,
-    // )
-
     #toolbox.side-by-side(gutter: 3mm, columns: (2fr, 2fr))[
+      // Left column content (optional)
     ][
       #set align(horizon)
       #toolbox.all-sections((sections, current) => {
+        // 5. Map sections to apply fading logic
+        let formatted-items = sections.map(section => {
+          if section == current {
+            // Highlight: Full opacity, bold
+            text(weight: "bold", section)
+          } else {
+            // Inactive: Fade out
+            text(fill: white.transparentize(70%), weight: "regular", section)
+          }
+        })
+
+        // 6. Display the list
         enum(
-          numbering: n => (
-            block()[
-              #text(fill: sunset-gradient, weight: "bold", size: 25pt)[#n]
-            ]
-          ),
+          numbering: n => block(text(fill: sunset-gradient, weight: "bold", size: 25pt)[#n]),
           tight: false,
           body-indent: 2em,
-          ..sections,
+          ..formatted-items,
         )
       })
     ]
   ]
 ]
 
-#my-new-section("Intro")
+#my-new-section("Introduction", "09:00")
 
 #slide[
   #title[Gartner Hype Cycle]
@@ -390,10 +483,10 @@
   [The goals of this workshop],
   indent[Review LLM basics],
   [LLM Agents concepts],
-  indent[Tool calling], // Formatter can't break this
-  indent[Code execution],
+  indent[Tool calling + Code execution], // Formatter can't break this
   indent[Workflows, Orchestration, Autonomy],
   [MCP],
+  indent[Clients + Servers],
 )
 
 #list-slide(
@@ -401,7 +494,7 @@
   [What we will do:],
   indent[Theory / concepts],
   indent[Coding exercises],
-  indent[Lab session + try out your own ideas],
+  indent[Lab sessions + try out your own ideas],
 )
 
 #list-slide(
@@ -420,7 +513,7 @@
   ]
 }
 
-#my-new-section("LLM basics")
+#my-new-section("LLM basics", "09.20")
 
 
 
@@ -550,31 +643,104 @@
   #figure(image("assets/Screenshot 2025-12-22 at 09.17.15.png", height: 80%, fit: "contain"))
 ]
 
+
+#slide[
+  #title[Building Chatbots]
+  // #set align(horizon)
+  #grid(inset: (x: 1em), columns: (1fr, 1fr), column-gutter: 1em)[
+    Request to OpenAI *Completions* API:
+    #set text(size: 0.8em)
+    ```shell
+    curl https://api.openai.com/v1/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $OPENAI_API_KEY" \
+      -d '{
+        "model": "gpt-3.5-turbo-instruct",
+        "prompt": "Say this is a test",
+        "max_tokens": 7,
+        "temperature": 0
+      }'
+    ```
+  ][
+    And you'd get back this:
+    #set text(size: 0.7em)
+    ```shell
+      {
+        "id": "cmpl-uqkvlQyYK7bGYrRHQ0eXlWi7",
+        "object": "text_completion",
+        "created": 1589478378,
+        "model": "gpt-3.5-turbo-instruct",
+        "system_fingerprint": "fp_44709d6fcb",
+        "choices": [
+          {
+            "text": "\n\nThis is indeed a test",
+            "index": 0,
+            "logprobs": null,
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 5,
+          "completion_tokens": 7,
+          "total_tokens": 12
+        }
+      }
+    ```
+  ]
+]
+
+#slide[
+  #title[Building Chatbots]
+  #set align(horizon)
+  #block(inset: (x: 1em))[
+    The newer *Chat Completions* API:
+    #set text(size: 0.9em)
+    ```shell
+    curl https://api.openai.com/v1/chat/completions \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $OPENAI_API_KEY" \
+      -d '{
+        "model": "gpt-5.2",
+        "messages": [
+          {
+            "role": "developer",
+            "content": "You are a helpful assistant."
+          },
+          {
+            "role": "user",
+            "content": "Hello!"
+          }
+        ]
+      }'
+    ```
+  ]
+]
+
 #slide[
   #title[Building Chatbots]
   #set align(horizon)
   - we can call the OpenAI API to get a completion
   - how to we have a conversation?
 
-  #reveal-code(lines: (1, 3, 6, 7))[```python
+  // #reveal-code(lines: (1, 3, 6, 7))[```python
+  //     model = ChatOpenAI()
+  //     response = model.invoke("Hi")
+  //     response[""]
+  // ```]
+
+  ```python
       model = ChatOpenAI()
       response = model.invoke("Hi")
-      response[""]
-  ```]
+      print(response.content)
+  ```
 ]
-
-#slide[
-  #figure(image("assets/coffee.jpg", height: 100%, fit: "cover"))
-  #place(top + left, dx: 1cm, dy: 5cm)[
-    #text("Coffee break", size: 35pt, fill: black, weight: "bold")
-  ]
-
-]
-
 
 #slide[
   #title[Exercise 1]
-  - see `notebooks/chatbot.py`
+  #block(inset: (x: 3em, y: 1em))[
+    - see `notebooks/chatbot.py`
+    - expected time: 10 min
+  ]
 ]
 
 
@@ -586,7 +752,17 @@
   ])
 ]
 
-#my-new-section("Agents")
+
+#slide[
+  #title[Exercise 2]
+  #block(inset: (x: 3em, y: 1em))[
+    - see `notebooks/rag.py`
+    - expected time: 10 min
+  ]
+]
+
+
+#my-new-section("Agents", "10.00")
 
 #slide[
   #title[What does agentic mean?]
@@ -627,17 +803,128 @@
   ]
 ]
 
+#slide[
+  #title[Tool calling]
+  #set align(center)
+  #set text(size: 0.6em)
+  #v(-6em)
+  #block(
+    fill: luma(230),
+    inset: 8pt,
+    radius: 4pt,
+    ```shell
+    curl https://api.openai.com/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -d '{
+      "model": "gpt-4.1",
+      "messages": [
+        {
+          "role": "user",
+          "content": "What is the weather like in Boston today?"
+        }
+      ],
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "description": "Get the current weather in a given location",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "location": {
+                  "type": "string",
+                  "description": "The city and state, e.g. San Francisco, CA"
+                },
+                "unit": {
+                  "type": "string", "enum": ["celsius", "fahrenheit"]
+                }
+              },
+              "required": ["location"]
+      ...
+    }'
+    ```,
+  )
+]
+
+
+#slide[
+  #title[Tool calling]
+  #set align(center)
+  #set text(size: 0.8em)
+  #columns(2)[
+    #block(
+      fill: luma(230),
+      inset: 8pt,
+      radius: 4pt,
+      ```shell
+      {
+        "id": "chatcmpl-abc123",
+        "object": "chat.completion",
+        "created": 1699896916,
+        "model": "gpt-4o-mini",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": null,
+              "tool_calls": [
+                {
+                  "id": "call_abc123",
+                  "type": "function",
+                  "function": {
+                    "name": "get_current_weather",
+                    "arguments": "{\n\"location\": \"Boston, MA\"\n}"
+                  }
+                }
+              ]
+            },
+            "logprobs": null,
+            "finish_reason": "tool_calls"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 82,
+          "completion_tokens": 17,
+          "total_tokens": 99,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "accepted_prediction_tokens": 0,
+            "rejected_prediction_tokens": 0
+          }
+        }
+      }
+      ```,
+    )
+  ]
+]
 
 #slide[
   #title[Exercise 2]
   #set align(horizon)
   - see `notebooks/tool-calling.py`
+    - write from scratch
+    - using langgraph
 ]
 
 
 #slide[
+  #figure(image("assets/coffee.jpg", height: 100%, fit: "cover"))
+  #place(top + left, dx: 1cm, dy: 5cm)[
+    #text("Coffee break", size: 35pt, fill: black, weight: "bold")
+  ]
+]
+
+
+// TODO: finish this slide
+// TODO: add figure
+// see this https://www.ibm.com/think/topics/react-agent
+#slide[
   #title[ReAct pattern]
   - design pattern for agentic systems
+  - builds on Chain-of-Thought prompting + tool-use
   - simple but powerful
 ]
 
@@ -647,28 +934,20 @@
   #set align(horizon)
   - time to build our first agent!
   - see `notebooks/ReAct.py`
+    - write from scratch
+    - using langgraph
   - add one new tool
 ]
 
 #slide[
   #title[Advanced Concepts: self-improvement]
   - let's look at more design patterns
+  - code execution
   - reflexion
+  - how to evaluate?
 ]
 
-#slide[
-  #title[Advanced Concepts: Memory]
-  - memory allows the agent to self-improve
-  - let's build a memory tool
-]
-
-#slide[
-  #title[Advanced Concepts: Evals]
-  - memory allows the agent to self-improve
-  - let's build a memory tool
-]
-
-#my-new-section("  Lab 1: Deep research  (11.00-12.00)")
+#my-new-section("Lab 1: Deep research", "11.00")
 
 #slide[
   #title[Lab 1: Building a deep-research system]
@@ -682,20 +961,33 @@
   - https://github.com/Ayanami0730/deep_research_bench
 ]
 
-#my-new-section("  Lunch")
+#my-new-section("Lunch", "12.00")
+
+#my-new-section("Agents: Advanced Concepts", "13.00")
+
+#slide[
+  #title[Advanced Concepts: Memory]
+  - memory allows the agent to self-improve
+  - let's build a memory tool
+]
+
+#slide[
+  #title[Advanced Concepts: Evals]
+  - memory allows the agent to self-improve
+  - let's build a memory tool
+]
 
 #slide[
   #title[Advanced Concepts: Deep Agents]
   - agent with shell and code execution
 ]
 
-#my-new-section("Code execution")
 
-#my-new-section("Deep Agents")
+#my-new-section("MCP", "15.00")
 
-#my-new-section("MCP")
+#my-new-section("Lab 2: MCP", "15.00")
 
-#my-new-section("  Lab 2: MCP")
+#my-new-section("Conclusion", "16.45")
 
 
 // == How does it work?
