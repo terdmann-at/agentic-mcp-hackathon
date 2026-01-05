@@ -12,7 +12,8 @@ fi
 FILES=(
   "src/deep_research/mas/graph.py"
   "src/deep_research/mas/nodes.py"
-  "src/deep_research/react_agent.py"
+  "src/deep_research/simple_agent/nodes.py"
+  "src/deep_research/simple_agent/graph.py"
 )
 
 echo "Stripping solutions from: ${FILES[*]}"
@@ -34,9 +35,16 @@ file_path = '$file'
 with open(file_path, 'r') as f:
     content = f.read()
 
-# Pattern: # <solution> ... # </solution>
-# flags=re.DOTALL matches newline
-new_content = re.sub(r'# <solution>.*?# </solution>', '# <solution>\n    # TODO: Implement this\n    pass\n    # </solution>', content, flags=re.DOTALL)
+def replacer(match):
+    indent = match.group(1)
+    # Align pass and markers with the captured indentation
+    return f'{indent}# <solution>\n{indent}# TODO: Implement this\n{indent}pass\n{indent}# </solution>'
+
+# Pattern: ^([ \t]*) captures indentation at start of line
+# flags=re.DOTALL | re.MULTILINE
+pattern = r'^([ \t]*)# <solution>.*?# </solution>'
+
+new_content = re.sub(pattern, replacer, content, flags=re.DOTALL | re.MULTILINE)
 
 with open(file_path, 'w') as f:
     f.write(new_content)
