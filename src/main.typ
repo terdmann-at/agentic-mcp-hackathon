@@ -1,24 +1,18 @@
-// #import "@preview/touying:0.6.1": *
-// #import themes.university: *
-// #import "@preview/cetz:0.3.2"
-// #import "@preview/fletcher:0.5.5" as fletcher: node, edge
-// #import themes.default: *
-// // fletcher bindings for touying
-// // #let fletcher-diagram = touying-reducer.with(reduce: fletcher.diagram, cover: fletcher.hide)
-// #show: university-theme.with(aspect-ratio: "16-9",
-//   config-info(
-//     title: [Workshop: Agents and MCP],
-//     subtitle: [Workshop @ Altana],
-//     author: [Tore Erdmann],
-//     date: datetime.today(),
-//     institution: [Alexander Thamm GmbH],
-//     //logo: emoji.school,
-//     margin: (x: 4em, y: 1cm),
-//   ),
-// )
+/*
+ *
+ *
+ * Exercises:
+ *   - 01: Chatbot
+ *   - 02: RAG
+ *   - 03: Tool-calling / RAG via tool-calling
+ *   - 04: ReAct
+ *   - 05: More agentic design patterns
+ *
+ *
+ */
 
-// Get Polylux from the official package repository
-#import "@preview/polylux:0.4.0": *
+#import "logic.typ": *
+#import "toolbox.typ": *
 
 // Make the paper dimensions fit for a presentation and the text larger
 #set page(
@@ -29,7 +23,6 @@
   // margin: (x: 4em, y: 2em),
 )
 
-
 // #let title-slide(title_txt) = {
 //   slide[
 //     #set align(center + horizon)
@@ -37,7 +30,6 @@
 //     #toolbox.register-section[#title_txt]
 //   ]
 // }
-
 
 
 // #let sections-band = toolbox.all-sections((sections, current) => {
@@ -74,6 +66,7 @@
 #let black-gradient = gradient.linear(
   rgb("#000000").transparentize(90%),
   rgb("#000000").transparentize(20%),
+  rgb("#000000").transparentize(10%),
   rgb("#000000").transparentize(10%),
   rgb("#000000").transparentize(10%),
 )
@@ -134,82 +127,34 @@
   ]
 ]
 
-#let my-new-section(name, time) = slide[
-  #set align(center + horizon)
-  #set text(fill: sunset-gradient, weight: "bold")
-  // 1. Create the look for the Table of Contents entry here
-  #let toc-entry = [
-    #name
-    #h(1fr) // Spacer
-    #text(size: 0.7em, weight: "thin")[#time] // Formatting for time
-  ]
-  // 2. Register the pre-formatted content
-  #toolbox.register-section(toc-entry)
-  #box(
-    stroke: 6pt + sunset-gradient-3,
-    inset: 0.0em,
-  )[
-    #box(stroke: 4pt + sunset-gradient-2, inset: 0.0em)[
-      #box(stroke: 1pt + sunset-gradient, inset: 0.0em)[
-        #box(
-          stroke: 0.3pt + white.transparentize(50%),
-          inset: 0.5em,
-        )[
-          // 3. Only display the name in the big heading
-          #heading(level: 1, name)
-        ]
-      ]
-    ]
-  ]
-]
-
-#let my-new-section(name, time) = slide[
-  // 1. Define the formatted content for the list
-  #let toc-entry = [
-    #name
-    #h(1fr)
-    #text(size: 0.8em, weight: "regular")[#time]
-  ]
-
-  // 2. Register it
-  #toolbox.register-section(toc-entry)
-
-  // 3. Page / Background setup
-  #set page(margin: (x: 0em, y: 0em), background: image("at-bg.jpg", width: 100%, height: 100%, fit: "cover"))
-  #place(top + left, box(fill: black-gradient, width: 100%, height: 100%))
-
-  // 4. Content
-  #block(inset: (x: 2em, y: 1em))[
-    #title[Agenda] // Or use your nested box design here if preferred
-    #set text(fill: white)
-
-    #toolbox.side-by-side(gutter: 3mm, columns: (2fr, 2fr))[
-      // Left column content (optional)
-    ][
-      #set align(horizon)
-      #toolbox.all-sections((sections, current) => {
-        // 5. Map sections to apply fading logic
-        let formatted-items = sections.map(section => {
-          if section == current {
-            // Highlight: Full opacity, bold
-            text(opacity: 1.0, weight: "bold", section)
-          } else {
-            // Inactive: Fade out
-            text(opacity: 0.3, weight: "regular", section)
-          }
-        })
-
-        // 6. Display the list
-        enum(
-          numbering: n => block(text(fill: sunset-gradient, weight: "bold", size: 25pt)[#n]),
-          tight: false,
-          body-indent: 2em,
-          ..formatted-items,
-        )
-      })
-    ]
-  ]
-]
+// #let my-new-section(name, time) = slide[
+//   #set align(center + horizon)
+//   #set text(fill: sunset-gradient, weight: "bold")
+//   // 1. Create the look for the Table of Contents entry here
+//   #let toc-entry = [
+//     #name
+//     #h(1fr) // Spacer
+//     #text(size: 0.7em, weight: "thin")[#time] // Formatting for time
+//   ]
+//   // 2. Register the pre-formatted content
+//   #register-section(toc-entry)
+//   #box(
+//     stroke: 6pt + sunset-gradient-3,
+//     inset: 0.0em,
+//   )[
+//     #box(stroke: 4pt + sunset-gradient-2, inset: 0.0em)[
+//       #box(stroke: 1pt + sunset-gradient, inset: 0.0em)[
+//         #box(
+//           stroke: 0.3pt + white.transparentize(50%),
+//           inset: 0.5em,
+//         )[
+//           // 3. Only display the name in the big heading
+//           #heading(level: 1, name)
+//         ]
+//       ]
+//     ]
+//   ]
+// ]
 
 // #let sunset-gradient = gradient.linear(
 //   // focal-center: (10%, 10%),
@@ -234,10 +179,10 @@
 
   #set page(
     margin: (x: 2em, y: 1em),
-    background: image("at-bg.jpg", width: 100%, height: 100%, fit: "cover"),
+    background: image("/assets/at-bg.jpg", width: 100%, height: 100%, fit: "cover"),
   )
   #place(top + left, dx: 0pt, dy: 10pt)[
-    #image("at-logo.png", width: 4cm)
+    #image("/assets/at-logo.png", width: 4cm)
   ]
   #v(3cm)
 
@@ -252,38 +197,6 @@
   Altana | 21.01.2026
 ]
 
-// // TOC
-// #slide[
-//   #set page(
-//     margin: (x: 0em, y: 0em),
-//     background: image("at-bg.jpg", width: 100%, height: 100%, fit: "cover"),
-//   )
-//   #place(top + left)[
-//     #box(fill: black-gradient, width: 100%, height: 100%),
-//   ]
-//   #block(inset: (x: 2em, y: 1em))[
-//     #title[Agenda]
-//     #set text(fill: white)
-//     #toolbox.side-by-side(gutter: 3mm, columns: (2fr, 2fr))[
-//     ][
-//       #set align(horizon)
-//       #toolbox.all-sections((sections, current) => {
-//         enum(
-//           numbering: n => (
-//             block()[
-//               #text(fill: sunset-gradient, weight: "bold", size: 25pt)[#n]
-//             ]
-//           ),
-//           tight: false,
-//           body-indent: 2em,
-//           // Just spread sections. They now contain the pre-formatted Title + Time
-//           ..sections,
-//         )
-//       })
-//     ]
-//   ]
-// ]
-
 #let my-new-section(name, time) = slide[
   // 1. Define the formatted content for the list
   #let toc-entry = [
@@ -293,41 +206,49 @@
   ]
 
   // 2. Register it
-  #toolbox.register-section(toc-entry)
+  #register-section(toc-entry)
 
   // 3. Page / Background setup
-  #set page(margin: (x: 0em, y: 0em), background: image("at-bg.jpg", width: 100%, height: 100%, fit: "cover"))
+  #set page(margin: (x: 0em, y: 0em), background: image(
+    "/assets/at-bg.jpg",
+    width: 100%,
+    height: 100%,
+    fit: "cover",
+  ))
   #place(top + left, box(fill: black-gradient, width: 100%, height: 100%))
 
-  // 4. Content
-  #block(inset: (x: 2em, y: 1em))[
-    #title[Agenda] // Or use your nested box design here if preferred
-    #set text(fill: white)
+  #box(height: 100%, clip: true)[
+    // 4. Content
+    #block(inset: (x: 2em, y: 1em))[
+      #title[Agenda] // Or use your nested box design here if preferred
+      #v(-3em)
+      #set text(fill: white)
 
-    #toolbox.side-by-side(gutter: 3mm, columns: (2fr, 2fr))[
-      // Left column content (optional)
-    ][
-      #set align(horizon)
-      #toolbox.all-sections((sections, current) => {
-        // 5. Map sections to apply fading logic
-        let formatted-items = sections.map(section => {
-          if section == current {
-            // Highlight: Full opacity, bold
-            text(weight: "bold", section)
-          } else {
-            // Inactive: Fade out
-            text(fill: white.transparentize(70%), weight: "regular", section)
-          }
+      #side-by-side(gutter: 3mm, columns: (1.5fr, 2fr))[
+        // Left column content (optional)
+      ][
+        #set align(horizon)
+        #all-sections((sections, current) => {
+          // 5. Map sections to apply fading logic
+          let formatted-items = sections.map(section => {
+            if section == current {
+              // Highlight: Full opacity, bold
+              text(weight: "bold", section)
+            } else {
+              // Inactive: Fade out
+              text(fill: white.transparentize(70%), weight: "regular", section)
+            }
+          })
+
+          // 6. Display the list
+          enum(
+            numbering: n => block(text(fill: sunset-gradient, weight: "bold", size: 25pt)[#n]),
+            tight: false,
+            body-indent: 2em,
+            ..formatted-items,
+          )
         })
-
-        // 6. Display the list
-        enum(
-          numbering: n => block(text(fill: sunset-gradient, weight: "bold", size: 25pt)[#n]),
-          tight: false,
-          body-indent: 2em,
-          ..formatted-items,
-        )
-      })
+      ]
     ]
   ]
 ]
@@ -341,7 +262,7 @@
     #set align(horizon)
     #figure(
       image(
-        "assets/Figure_1_Hype_Cycle_for_Artificial_Intelligence_2023.png",
+        "/assets/img/Figure_1_Hype_Cycle_for_Artificial_Intelligence_2023.png",
         width: 80%,
         height: 80%,
         fit: "contain",
@@ -352,7 +273,7 @@
     #set align(horizon)
     #figure(
       image(
-        "assets/Figure_1_Hype_Cycle_for_Artificial_Intelligence_2025.png",
+        "/assets/img/Figure_1_Hype_Cycle_for_Artificial_Intelligence_2025.png",
         width: 80%,
         height: 80%,
         fit: "contain",
@@ -371,13 +292,30 @@
   ]
 ]
 
+#imgslide("A. Karpathy on programming", "/assets/img/Screenshot 2025-12-29 at 22.44.35.png", "")
+
+// TODO: summarize the below:
+// https://x.com/karpathy/status/2002118205729562949?s=20
+#slide()[
+  #title[A. Karpathy's 2025 LLM Year in Review]
+  - Rise of RLVR (Reinforcement Learning from Verifiable Rewards): The standard training pipeline (Pretraining → SFT → RLHF) has evolved. The new key stage is RLVR, where models train against verifiable outcomes (like math or code execution). This allows them to "think" longer and develop reasoning strategies, similar to OpenAI's o1 and o3 models.
+
+  - "Jagged" Intelligence (Ghosts vs. Animals): Karpathy describes current AI as "ghosts" rather than "animals." Because they are not evolved for biological survival but optimized for specific rewards, their intelligence is "jagged"—they can be geniuses at complex tasks but fail at basic common sense or be easily "jailbroken."
+
+  - Vibe Coding: A shift in programming where users simply describe what they want in natural language ("vibes"), and the AI handles the actual implementation. This lowers the barrier to entry, allowing non-coders to build software and professionals to work faster.
+
+  - The App Layer (e.g., Cursor): A distinct "application layer" is emerging (like the Cursor IDE) that acts as a manager for the raw "college graduate" intelligence of LLMs. These apps handle context, tools, and the feedback loop to make the models actually useful for work.
+
+  - Benchmark Fatigue: There is growing skepticism toward standard benchmarks. Since models are now heavily optimized (or "benchmaxxed") for specific test sets, high scores no longer guarantee real-world utility.
+]
+
 #slide()[
   #title[Shouldn't GDP go up?]
 
   #set text(size: 15pt)
   #block(inset: 2em)[
 
-    #toolbox.side-by-side(gutter: 3mm, columns: (1fr, 2fr))[
+    #side-by-side(gutter: 3mm, columns: (1fr, 2fr))[
 
       #one-by-one[
         Andrey Karpathy's take:
@@ -396,7 +334,7 @@
 
     ][
       #set align(center + horizon)
-      #figure(image("assets/Screenshot 2025-12-21 at 12.35.46.png", width: 80%))
+      #figure(image("/assets/img/Screenshot 2025-12-21 at 12.35.46.png", width: 100%))
     ]
   ]
 ]
@@ -406,7 +344,7 @@
 
   #figure(
     image(
-      "assets/Screenshot 2025-12-19 at 20.03.44.png",
+      "/assets/img/Screenshot 2025-12-19 at 20.03.44.png",
       width: 90%,
       height: 80%,
       fit: "contain",
@@ -418,7 +356,7 @@
   #title[Measuring AI Ability to Complete Long Tasks]
   #figure(
     image(
-      "assets/Screenshot 2025-12-21 at 14.03.25.png",
+      "/assets/img/Screenshot 2025-12-21 at 14.03.25.png",
       // "assets/difficulty-model-perf.png",
       width: 90%,
       height: 80%,
@@ -459,7 +397,6 @@
         .pos()
         .map(item => {
           if type(item) == dictionary and item.at("type", default: none) == "indent" {
-            // FIX: Shift the entire list item right, instead of nesting it
             pad(left: 1.5em, list(item.body))
           } else {
             list(item)
@@ -509,11 +446,11 @@
   slide[
     #set align(center + horizon)
     #title[#title_txt]
-    #toolbox.register-section[#title_txt]
+    #register-section[#title_txt]
   ]
 }
 
-#my-new-section("LLM basics", "09.20")
+#my-new-section("LLM basics", "09.15")
 
 
 
@@ -547,7 +484,7 @@
       #box(
         stroke: none,
         inset: 0pt,
-        image("assets/neural-network.png"),
+        image("/assets/img/neural-network.png"),
       )
     ][
       #stack(spacing: 1em, dir: ttb, text()[talk], text()[green], text()[chair], text()[but], text()[...])
@@ -571,7 +508,7 @@
       #box(
         stroke: none,
         inset: 0pt,
-        image("assets/neural-network.png"),
+        image("/assets/img/neural-network.png"),
       )
     ][
       #stack(spacing: 1em, dir: ttb, text()[choice], text()[about], text()[especially], text()[cellar], text()[...])
@@ -588,7 +525,7 @@
 #slide[
   #title[Sequence-to-sequence models]
   #figure(
-    image("assets/Screenshot 2025-12-21 at 16.15.47.png", height: 70%, fit: "contain"),
+    image("/assets/img/Screenshot 2025-12-21 at 16.15.47.png", height: 70%, fit: "contain"),
     numbering: none,
     caption: [
       #set text(size: 10pt)
@@ -598,36 +535,36 @@
 ]
 
 #slide[
-  #title[Attention]
-
-  #toolbox.side-by-side[
-    #set text(size: 16pt)
-    #item-by-item()[
-      - a seq to seq model: $h^d_t = f_d (h^d_(t−1),y_(t−1),c)$
-      - we can set $c = h^e_t$, so the final state of the encode
-      - $tilde(h)_t = tanh(W_c [c_t; h_t])$
-      - this can result in poor performance, since the output does not have access to the input words themselves
-      - we are compressing alot of measing into a single vector
-      - we can avoid this bottleneck by allowing the output words to directly “look at” the input words
-      - use dynamic context vector: $ c_t = sum_(i=1)^T alpha_i (h^d_(t-1), h^e_(1:T)) h^e_i $
-      - weighted mean of encoder states (soft-dictionary look-up)
+  #box(height: 100%, clip: true)[
+    #title[Attention]
+    #side-by-side[
+      #set text(size: 16pt)
+      #item-by-item[
+        - a seq to seq model: $h^d_t = f_d (h^d_(t−1),y_(t−1),c)$
+        - we can set $c = h^e_t$, so the final state of the encode
+        - $tilde(h)_t = tanh(W_c [c_t; h_t])$
+        - this can result in poor performance, since the output does not have access to the input words themselves
+        - we are compressing alot of measing into a single vector
+        - we can avoid this bottleneck by allowing the output words to directly “look at” the input words
+        - use dynamic context vector: $ c_t = sum_(i=1)^T alpha_i (h^d_(t-1), h^e_(1:T)) h^e_i $
+        - this is a weighted mean (soft dictionary look-up)
+      ]
+    ][
+      #figure(
+        image("/assets/img/Screenshot 2025-12-21 at 16.27.44.png", height: 70%, fit: "contain"),
+        numbering: none,
+        caption: [
+          #set text(size: 10pt)
+          M.-T. Luong. \"Neural Machine Translation\", PhD Thesis, Stanford CS Dept., 2016
+        ],
+      )
     ]
-  ][
-
-    #figure(
-      image("assets/Screenshot 2025-12-21 at 16.27.44.png", height: 70%, fit: "contain"),
-      numbering: none,
-      caption: [
-        #set text(size: 10pt)
-        M.-T. Luong. \"Neural Machine Translation\", PhD Thesis, Stanford CS Dept., 2016
-      ],
-    )
   ]
 ]
 
 #slide[
   #figure(
-    image("assets/Screenshot 2025-12-21 at 16.27.44.png", height: 70%, fit: "contain"),
+    image("/assets/img/Screenshot 2025-12-30 at 14.49.02.png", height: 90%, fit: "contain"),
     numbering: none,
     caption: [
       #set text(size: 10pt)
@@ -639,8 +576,12 @@
 
 #slide[
   #title[Transformer]
-  // #figure(image("assets/Transformer.png", height: 80%, fit: "contain"),)
-  #figure(image("assets/Screenshot 2025-12-22 at 09.17.15.png", height: 80%, fit: "contain"))
+  #figure(image("/assets/img/Screenshot 2025-12-22 at 09.17.15.png", height: 80%, fit: "contain"))
+]
+
+#slide[
+  #title[RLHF]
+  #figure(image("/assets/img/RLHF_diagram.svg", height: 80%, fit: "contain"))
 ]
 
 
@@ -693,7 +634,7 @@
   #title[Building Chatbots]
   #set align(horizon)
   #block(inset: (x: 1em))[
-    The newer *Chat Completions* API:
+    For the *Chat Completions* API, we send/recieve a list of messages:
     #set text(size: 0.9em)
     ```shell
     curl https://api.openai.com/v1/chat/completions \
@@ -746,7 +687,7 @@
 
 #slide[
   #title[Retrieval Augemented Generation]
-  #figure(image("assets/RAG_diagram.svg", height: 80%, fit: "contain"), numbering: none, caption: [
+  #figure(image("/assets/img/RAG_diagram.svg", height: 80%, fit: "contain"), numbering: none, caption: [
     #set text(size: 10pt)
     Source: https://en.wikipedia.org/wiki/Retrieval-augmented_generation#/media/File:RAG_diagram.svg (retrieved on 29.12.2025)
   ])
@@ -768,22 +709,33 @@
   #title[What does agentic mean?]
   #only(2)[
     #figure(
-      image("assets/Screenshot 2025-12-19 at 19.59.31.png", width: 80%),
+      image("/assets/img/Screenshot 2025-12-19 at 19.59.31.png", width: 80%),
     ) <agentic>
   ]
 ]
+/*
+ * Write an essay on topic X
+ * Agentic:
+ *   - do you need to do research (web)?
+ *   - write first draft
+ *   - consider which parts need revision or more research
+ *   - revise draft
+ *   - ...
+ *
+ *   Important to break down tasks like this.
+ */
 
 #slide[
   #title[Workflows vs. agents]
   #figure(
-    image("assets/Screenshot 2025-12-19 at 19.57.51.png", width: 80%),
+    image("/assets/img/Screenshot 2025-12-19 at 19.57.51.png", width: 80%),
   ) <agentic>
 ]
 
 
 #slide[
   #title[Tool calling]
-  #toolbox.side-by-side(gutter: 3mm, columns: (1fr, 1fr))[
+  #side-by-side(gutter: 3mm, columns: (1fr, 1fr))[
 
     #item-by-item[
       - tool calling unlocks interaction with the external world
@@ -793,7 +745,7 @@
     ]
   ][
     #figure(
-      image("assets/Screenshot 2025-12-21 at 17.20.22.png", height: 80%),
+      image("/assets/img/Screenshot 2025-12-21 at 17.20.22.png", height: 80%),
       numbering: none,
       caption: [
         #set text(size: 10pt)
@@ -909,9 +861,10 @@
     - using langgraph
 ]
 
+#my-new-section("Coffee break 1", "10.30")
 
 #slide[
-  #figure(image("assets/coffee.jpg", height: 100%, fit: "cover"))
+  #figure(image("/assets/img/coffee.jpg", height: 100%, fit: "cover"))
   #place(top + left, dx: 1cm, dy: 5cm)[
     #text("Coffee break", size: 35pt, fill: black, weight: "bold")
   ]
@@ -950,10 +903,23 @@
 #my-new-section("Lab 1: Deep research", "11.00")
 
 #slide[
+  #title[Deep-research system]
+
+  - GAIA is arguably the most comprehensive benchmark for agents
+  - Its questions are very difficult and hit on many challenges of LLM-based systems
+  - Here is an example of a hard question:
+    #box(inset: 1em)[
+      #set text(size: 0.8em)
+      Which of the fruits shown in the 2008 painting "Embroidery from Uzbekistan" were served as part of the October 1949 breakfast menu for the ocean liner that was later used as a floating prop for the film "The Last Voyage"? Give the items as a comma-separated list, ordering them in clockwise order based on their arrangement in the painting starting from the 12 o'clock position. Use the plural form of each fruit.
+    ]
+  - OpenAI reported that GPT-4 only got 7% correct, while their deep-research system got 67%
+]
+
+#slide[
   #title[Lab 1: Building a deep-research system]
   #set align(horizon)
   - we are ready for our first project
-  - see the starter code at `code/deep-research`
+  - see the starter code at `code/deep-research/`
   - Tasks:
     - code up a deep-research system
     - evaluate your system and compare with react agent
@@ -963,7 +929,56 @@
 
 #my-new-section("Lunch", "12.00")
 
-#my-new-section("Agents: Advanced Concepts", "13.00")
+#my-new-section("MCP", "13.00")
+
+#slide[
+  #title[Model Context Protocol (MCP)]
+
+  One year of MCP:
+  - first released Nov 24
+  - donated to Linux Foundation
+  - see https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation
+]
+
+
+#slide[
+  #title[Downsides of MCP]
+  - letting agents write code to compose MCP much more effective
+  - and much more token efficient
+]
+
+
+// TODO: fill this in
+#slide[
+  #title[Exercise X]
+  #item-by-item[
+    - see `notebooks/XX_mcp.py`
+      - connect to MCP server
+      - write MCP server
+  ]
+]
+
+#my-new-section("Agents: Advanced Concepts", "14.00")
+
+#imgslide(
+  "Code agent",
+  "/assets/img/code_agent.png",
+  "Source: https://huggingface.co/blog/open-deep-research#the-gaia-benchmark",
+)
+
+
+#slide[
+  #title[The Risk: "What is the worst that can happen?"]
+  #block(inset: 2em)[
+    #item-by-item[
+      Even with Docker, a malicious or confused agent with root inside a container can cause damage if not properly sandboxed:
+      - Host Filesystem Wipe: You mounted `-v ./data:/data`. If the agent runs `rm -rf /data/*`, it deletes the files on your actual laptop/server.
+      - Network Attacks: The agent can use curl or Python to scan your local network (192.168.1.x), attack other devices, or access internal services (like a local database) that have no password.
+      - Resource Exhaustion (DoS): The agent could launch a "fork bomb" or fill the disk, crashing your host machine.
+      - Container Escape (Rare): If there is a kernel vulnerability, running as root increases the chance of "escaping" the container to control the host OS.
+    ]
+  ]
+]
 
 #slide[
   #title[Advanced Concepts: Memory]
@@ -972,9 +987,15 @@
 ]
 
 #slide[
+  - Exercise: deep coding agent with memory
+  - use to analyze data?
+  - remember what has been tried before
+]
+
+#slide[
   #title[Advanced Concepts: Evals]
-  - memory allows the agent to self-improve
-  - let's build a memory tool
+  - evals: rigorous error analysis process
+  - *the* factor predicting success of an Agentic AI project
 ]
 
 #slide[
@@ -983,12 +1004,26 @@
 ]
 
 
-#my-new-section("MCP", "15.00")
+#my-new-section("Coffee break 2", "15.00")
+#my-new-section("Lab 2: MCP + advanced agents", "15.15")
 
-#my-new-section("Lab 2: MCP", "15.00")
 
 #my-new-section("Conclusion", "16.45")
 
+#slide[
+
+  #set align(horizon)
+
+  Some fun:
+  - https://gricha.dev/blog/the-highest-quality-codebase
+
+  Future trends:
+  - Small models like HRM are not frontier models (1-2 trillion paramters), but can do reasoning
+  - David Silver:
+    - "models will be trained with RL for computer use"
+    - with this the models will go beyond human data ("era of experience")
+
+]
 
 // == How does it work?
 //
@@ -1013,7 +1048,7 @@
 // #pause
 //
 // #figure(
-// image("assets/Screenshot 2025-12-19 at 19.23.55.png", width: 80%),
+// image("/assets/img/Screenshot 2025-12-19 at 19.23.55.png", width: 80%),
 // ) <perc>
 //
 // == Basics: MLP
@@ -1040,7 +1075,7 @@
 //
 //
 // #figure(
-// image("assets/gpt1_paper.png", width: 80%),
+// image("/assets/img/gpt1_paper.png", width: 80%),
 // caption: [],
 // ) <gpt1>
 // */
