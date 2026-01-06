@@ -969,6 +969,56 @@
   ]
 ]
 
+#slide[
+  #title[Dynamic MCP]
+  - one problem with MCP: too many tools call overwhelm the model
+  - fixed toolset
+  - instead: https://www.docker.com/blog/dynamic-mcps-stop-hardcoding-your-agents-world/
+
+  #text(size: 8pt)[
+    #table(
+      columns: (auto, 1fr, 1fr, 1fr),
+      inset: 10pt,
+      align: horizon,
+      table.header([*Workflow*], [*Before: Static MCP setup*], [*After: Dynamic MCPs*], [*Impact*]),
+      [Tool discovery],
+      [Manually browse the MCP servers],
+      [mcp-find searches a Docker MCP Catalog (230+ servers)],
+      [Faster discovery],
+
+      [Adding tools],
+      [Enable the MCP servers manually],
+      [mcp-add pulls only the servers an agent needs],
+      [Zero manual config; just-in-time tooling],
+
+      [Authentication],
+      [Configure the MCP servers ahead of time],
+      [Prompt user to complete OAuth when required],
+      [Smoother onboarding flows (mcp-ui)],
+
+      [Tool composition],
+      [Agent generated tool calls; definitions sent to model],
+      [With code-mode, agents write code using multiple tools],
+      [Multi-tool workflows and unified outputs],
+
+      [Context size],
+      [Load lots of unused tool definitions],
+      [Keep only the tools actually required for the task],
+      [Lower token usage and latency],
+
+      [Future-proofing],
+      [Static integrations],
+      [Dynamic, composable tools with sandboxed scripting],
+      [Ready for evolving agent behaviors],
+
+      [Developer involvement],
+      [Constant context switching and config hacking],
+      [Agents self-serve: discover, authorize, and orchestrate],
+      [Fewer manual steps; better focus time],
+    )
+  ]
+]
+
 #my-new-section("Agents: Advanced Concepts", "14.00")
 
 #imgslide(
