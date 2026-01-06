@@ -18,6 +18,7 @@ except ImportError:
     mas_app = None
     run_react_agent = None
 
+
 def main():
     print("Welcome to the Deep Research Helper!")
     print("-------------------------------------")
@@ -27,18 +28,20 @@ def main():
     print("3. Define Nodes (src/nodes.py)")
     print("4. Build Graph (src/graph.py)")
     print("-------------------------------------")
-    
-    mode = input("Select Mode:\n[1] ReAct Baseline\n[2] Deep Research MAS (Exercise)\n> ").strip()
-    
+
+    mode = input(
+        "Select Mode:\n[1] ReAct Baseline\n[2] Deep Research MAS (Exercise)\n> "
+    ).strip()
+
     print("Type 'quit' to exit.")
-    
+
     while True:
         user_input = input("\nWhat would you like to research? ")
         if user_input.lower() in ["quit", "exit"]:
             break
-            
+
         print(f"\nStarting research on: {user_input}")
-        
+
         if mode == "1":
             if run_react_agent:
                 print("Running ReAct Baseline...")
@@ -46,10 +49,12 @@ def main():
                 print(f"\nResult:\n{res}")
             else:
                 print("Error: ReAct agent not found.")
-                
+
         elif mode == "2":
             if mas_app is None:
-                print("Error: MAS app is not implemented yet. Implementing exercises is required.")
+                print(
+                    "Error: MAS app is not implemented yet. Implementing exercises is required."
+                )
                 print("Check src/mas/state.py, src/mas/nodes.py, and src/mas/graph.py")
                 continue
 
@@ -58,10 +63,10 @@ def main():
                 "topic": user_input,
                 "sub_topics": [],
                 "research_outputs": [],
-                "final_report": ""
+                "final_report": "",
             }
             config = {"configurable": {"thread_id": "1"}}
-            
+
             try:
                 final_state = mas_app.invoke(initial_state, config)
                 print("\n=== FINAL REPORT ===\n")
@@ -71,13 +76,14 @@ def main():
                 print(f"Error: {e}")
                 print("Did you implement the MAS exercises?")
 
+
 def start_ui():
     """Entry point for the streamlit app."""
-    import sys
     from streamlit.web import cli as stcli
-    
+
     sys.argv = ["streamlit", "run", str(Path(__file__).parent / "streamlit_app.py")]
     sys.exit(stcli.main())
+
 
 if __name__ == "__main__":
     main()

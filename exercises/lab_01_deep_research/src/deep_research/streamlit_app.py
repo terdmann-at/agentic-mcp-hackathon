@@ -1,5 +1,3 @@
-import sys
-from pathlib import Path
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -56,21 +54,27 @@ if prompt := st.chat_input("What would you like to research?"):
                 else:
                     # MAS Mode
                     if mas_app is None:
-                        st.error("MAS app is not implemented yet. Please complete the exercises.")
-                        st.info("Check src/mas/state.py, src/mas/nodes.py, and src/mas/graph.py")
+                        st.error(
+                            "MAS app is not implemented yet. Please complete the exercises."
+                        )
+                        st.info(
+                            "Check src/mas/state.py, src/mas/nodes.py, and src/mas/graph.py"
+                        )
                     else:
                         initial_state = {
                             "topic": prompt,
                             "sub_topics": [],
                             "research_outputs": [],
-                            "final_report": ""
+                            "final_report": "",
                         }
                         result = mas_app.invoke(initial_state)
                         response = result.get("final_report", "No report generated.")
 
                 if response:
                     st.markdown(response)
-                    st.session_state.messages.append({"role": "assistant", "content": response})
-                    
+                    st.session_state.messages.append(
+                        {"role": "assistant", "content": response}
+                    )
+
             except Exception as e:
                 st.error(f"An error occurred: {e}")

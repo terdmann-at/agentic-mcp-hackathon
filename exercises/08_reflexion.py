@@ -1,19 +1,17 @@
 # %% [markdown]
 # # Exercise 8: Reflexion Pattern
-# 
+#
 # Goal: Implement the **Reflexion** design pattern.
 #
-# Reflexion uses a "critique" step to verify the agent's output and provide feedback for a revision. 
+# Reflexion uses a "critique" step to verify the agent's output and provide feedback for a revision.
 # This simple loop often improves performance on complex reasoning tasks significantly.
 #
 # Pattern: `Actor` -> `Evaluate/Critique` -> `Self-Reflection` -> `Repeat` (if needed).
 
 # %%
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langchain_openai import AzureChatOpenAI
-from langchain_core.output_parsers import StrOutputParser
 
-model = AzureChatOpenAI(deployment_name="gpt-4o", temperature=0)
+model = AzureChatOpenAI(deployment_name="gpt-4.1", temperature=0)
 
 # %%
 # 1. First Attempt Generation
@@ -62,7 +60,7 @@ if "PERFECT" not in critique:
 
     Please rewrite the code to address the feedback.
     """
-    
+
     final_solution = model.invoke(revision_prompt).content
     print("\n--- Final Solution ---")
     print(final_solution)

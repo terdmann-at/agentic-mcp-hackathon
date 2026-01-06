@@ -1,8 +1,8 @@
 # %% [markdown]
 # # Exercise 7: Deep Agents (FileSystem Memory)
-# 
+#
 # Goal: Build a "Deep Agent" that uses the local filesystem to manage context and memory.
-# 
+#
 # "Deep Agents" in LangChain often refer to agents that can handle long-running tasks by persistenting state, plans, and research notes to files, rather than keeping everything in the context window.
 #
 # Prerequisites: `uv add langchain-community` (if not already present)
@@ -16,10 +16,10 @@ working_dir = Path(tempfile.mkdtemp())
 print(f"Working in: {working_dir}")
 
 # %%
+from langchain import hub
+from langchain.agents import AgentExecutor, create_react_agent
 from langchain_community.agent_toolkits import FileManagementToolkit
 from langchain_openai import AzureChatOpenAI
-from langchain.agents import create_react_agent, AgentExecutor
-from langchain import hub
 
 # 1. Setup Tools
 # The FileManagementToolkit gives the agent tools like:
@@ -30,7 +30,7 @@ tools = toolkit.get_tools()
 print(f"Tools available: {[t.name for t in tools]}")
 
 # 2. Setup Model
-model = AzureChatOpenAI(deployment_name="gpt-4o", temperature=0)
+model = AzureChatOpenAI(deployment_name="gpt-4.1", temperature=0)
 
 # 3. Setup Agent
 # We use a standard ReAct prompt
@@ -60,6 +60,7 @@ agent_executor.invoke({"input": task})
 # Let's inspect the files the agent created
 print("\n--- Listing Files ---")
 import os
+
 for root, dirs, files in os.walk(working_dir):
     for file in files:
         print(f"File: {file}")

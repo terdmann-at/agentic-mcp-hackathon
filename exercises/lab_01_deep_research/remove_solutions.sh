@@ -12,8 +12,8 @@ fi
 FILES=(
   "src/deep_research/mas/graph.py"
   "src/deep_research/mas/nodes.py"
-  "src/deep_research/simple_agent/nodes.py"
-  "src/deep_research/simple_agent/graph.py"
+  "src/deep_research/react/nodes.py"
+  "src/deep_research/react/graph.py"
 )
 
 echo "Stripping solutions from: ${FILES[*]}"

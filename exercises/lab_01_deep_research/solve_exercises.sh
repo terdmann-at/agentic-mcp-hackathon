@@ -8,9 +8,9 @@ echo "Restoring solutions from .solutions/mas..."
 cp .solutions/mas/graph.py src/deep_research/mas/graph.py
 cp .solutions/mas/nodes.py src/deep_research/mas/nodes.py
 
-echo "Copying simple_agent solutions..."
-cp .solutions/simple_agent/nodes.py src/deep_research/simple_agent/nodes.py
-cp .solutions/simple_agent/graph.py src/deep_research/simple_agent/graph.py
+echo "Copying react solutions..."
+cp .solutions/react/nodes.py src/deep_research/react/nodes.py
+cp .solutions/react/graph.py src/deep_research/react/graph.py
 
 # cp .solutions/mas/state.py src/deep_research/mas/state.py # Assuming state doesn't change
 

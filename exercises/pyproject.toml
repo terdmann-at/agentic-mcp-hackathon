@@ -16,3 +16,6 @@ dependencies = [
     "pandas>=2.3.3",
     "smolagents>=1.23.0",
 ]
+
+[tool.pyrefly]
+

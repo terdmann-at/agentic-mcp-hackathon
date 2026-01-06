@@ -1,50 +1,57 @@
-# Lab 2: Advanced MCP Multi-Agent System
+# Lab 02: MCP Advanced - Coding & Deep Agents
 
-This lab builds an advanced agentic system that combines:
-1.  **Safe Code Execution**: Using a local Docker-based MCP server.
-2.  **Advanced Reasoning**: Using the `@modelcontextprotocol/server-sequential-thinking` MCP server.
-3.  **Web Research**: Using a custom local tool to scrape web pages.
-
-## Setup
-
-1.  **Prerequisites**:
-    *   Docker Desktop must be running.
-    *   `uv` installed.
-    *   `npx` installed (Node.js).
-
-2.  **Install Dependencies**:
-    Dependencies are managed via `uv` in `pyproject.toml`.
-    ```bash
-    uv sync
-    ```
+In this lab, you will build an advanced agent system consisting of:
+1.  **Coding Agent**: A ReAct agent capable of executing Python code in a safe Docker sandbox.
+2.  **Deep Agent**: A LangGraph-based agent that performs research and delegates complex tasks to sub-agents (like the Coding Agent).
 
 ## Structure
+- `src/mcp_agent/coding_agent`: Contains the Coding Agent implementation.
+  - `agent.py`: **[EXERCISE]** You will define the system prompt and build the ReAct agent here.
+- `src/mcp_agent/deep_agent`: Contains the Deep Agent implementation.
+  - `graph.py`: **[EXERCISE]** You will define the LangGraph state graph here (nodes and edges).
+  - `coding_subagent.py`: **[EXERCISE]** You will implement the `delegate_code_task` tool to wrap the Coding Agent.
 
-*   `src/main.py`: The entry point. Connects to MCP servers and runs the agent.
-*   `src/mcp_server_docker.py`: A local MCP server that wraps `docker run` to execute Python code safely.
-*   `src/tools/web_search.py`: A simple tool to fetch and markdownify web pages.
+## Setup
+Ensure you have the environment set up (uv, docker).
 
-## Running the Lab
+## Exercises
 
-Run the main agent script:
+### Part 1: Coding Agent
+**Goal**: Implement a ReAct agent that uses Sequential Thinking, Docker, and Web Search.
+1.  Open `src/mcp_agent/coding_agent/agent.py`.
+2.  Implement the `build_agent` function.
+    - Define a powerful system prompt (mention Sequential Thinking and Docker).
+    - Use `create_react_agent` to build and return the agent.
 
+**Verification**:
+Run the Coding Agent test:
 ```bash
-uv run src/main.py
+uv run pytest tests/test_coding_agent.py
 ```
 
-## Tasks for the Lab
+### Part 2: Deep Agent & Sub-Agent Integration
+**Goal**: Build a Deep Agent that can delegate code tasks.
+1.  Open `src/mcp_agent/deep_agent/graph.py`.
+    - Build the `StateGraph` with `agent` and `tools` nodes.
+    - Wire them up with standard ReAct edges (START -> agent -> tools -> agent).
+2.  Open `src/mcp_agent/deep_agent/coding_subagent.py`.
+    - Implement `delegate_code_task`.
+    - It must establish connections to Docker (SSE) and Sequential Thinking (Stdio).
+    - Build and run the `coding_agent` within this isolated scope.
 
-1.  **Analyze the Architecture**: Look at how `src/main.py` connects to multiple MCP servers using `stdio_client`.
-2.  **Test the Agent**: Try asking it complex questions that require planning, coding, and searching.
-    *   *Example*: "Research the performance of the latest Llama 3 models, then create a plot comparing them to GPT-4 based on public benchmarks."
-3.  **Convert to Multi-Agent**:
-    *   Currently, `src/main.py` uses a single ReAct agent with all tools.
-    *   **Challenge**: Refactor `src/main.py` to use a **Supervisor** pattern (using LangGraph) with two distinct workers:
-        *   `Researcher`: Has access to `web_search` and `sequential_thinking`.
-        *   `Coder`: Has access to `execute_python`.
-        *   The Supervisor routes tasks between them.
+**Verification**:
+Run the Deep Agent integration test (Hard GAIA Question):
+```bash
+uv run pytest tests/test_gaia.py
+```
 
-## Troubleshooting
+## Solutions
+To see the answers or skip ahead:
+```bash
+./solve_exercises.sh
+```
 
-*   **Docker Errors**: Ensure Docker is running. The first run might take 10-20s to pull the `uv` image.
-*   **Sequential Thinking Error**: Ensure `npx` is available in your PATH.
+To reset to the exercise state:
+```bash
+./remove_solutions.sh
+```

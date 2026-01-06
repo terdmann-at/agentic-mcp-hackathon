@@ -1,12 +1,13 @@
 # %% [markdown]
 # # Exercise 4: ReAct Agent
-# 
+#
 # Goal: Build a ReAct agent from scratch using LangGraph.
 
 
 # %%
 import operator
 from typing import Literal
+
 from langchain.messages import AnyMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain.tools import tool
 from langchain_openai import AzureChatOpenAI
@@ -15,7 +16,7 @@ from typing_extensions import Annotated, TypedDict
 
 model = AzureChatOpenAI(
     temperature=1,
-    deployment_name="gpt-4o",
+    deployment_name="gpt-4.1",
 )
 
 
@@ -26,15 +27,18 @@ def multiply(a: int, b: int) -> int:
     """Multiply `a` and `b`.Args: a: First int, b: Second int"""
     return a * b
 
+
 @tool
 def add(a: int, b: int) -> int:
     """Adds `a` and `b`.Args: a: First int, b: Second int"""
     return a + b
 
+
 @tool
 def divide(a: int, b: int) -> float:
     """Divide `a` and `b`.Args: a: First int, b: Second int"""
     return a / b
+
 
 tools = [add, multiply, divide]
 tools_by_name = {tool.name: tool for tool in tools}
@@ -66,6 +70,7 @@ def llm_call(state: dict):
         "llm_calls": state.get("llm_calls", 0) + 1,
     }
 
+
 def tool_node(state: dict):
     """Performs the tool call"""
     result = []
@@ -74,6 +79,7 @@ def tool_node(state: dict):
         observation = tool.invoke(tool_call["args"])
         result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))
     return {"messages": result}
+
 
 def should_continue(state: MessagesState) -> Literal["tool_node", END]:
     """Decide if we should continue the loop or stop based upon whether the LLM made a tool call"""
@@ -103,4 +109,3 @@ messages = [HumanMessage(content=user_query)]
 messages = agent.invoke({"messages": messages})
 for m in messages["messages"]:
     m.pretty_print()
-

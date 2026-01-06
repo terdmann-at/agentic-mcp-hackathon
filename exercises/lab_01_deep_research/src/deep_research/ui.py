@@ -2,6 +2,7 @@ import sys
 import os
 from streamlit.web import cli as stcli
 
+
 def main():
     # Ensure we run from the project root where src is located
     # Adjust sys.argv to emulate 'streamlit run src/streamlit_app.py'

@@ -1,7 +1,8 @@
 from langgraph.graph import StateGraph, START, END
 from langgraph.constants import Send
-from solutions.mas.state import ResearchState, SubTaskState
-from solutions.mas.nodes import chief_editor_node, research_worker_node, writer_node
+from deep_research.mas.state import ResearchState
+from deep_research.mas.nodes import chief_editor_node, research_worker_node, writer_node
+
 
 def map_subtopics(state: ResearchState):
     """
@@ -9,9 +10,10 @@ def map_subtopics(state: ResearchState):
     Returns a list of Send objects.
     """
     return [
-        Send("research_worker", {"topic": sub_topic}) 
+        Send("research_worker", {"topic": sub_topic})
         for sub_topic in state["sub_topics"]
     ]
+
 
 # Exercise: Define the Graph
 # 1. Initialize StateGraph with ResearchState

@@ -1,17 +1,18 @@
 from langchain_openai import AzureChatOpenAI
 from langchain_community.tools import DuckDuckGoSearchRun
-from solutions.mas.state import ResearchState, ResearchPlan, SubTaskState
+from deep_research.mas.state import ResearchState, ResearchPlan, SubTaskState
 
 # Initialize Model
 llm = AzureChatOpenAI(deployment_name="gpt-4.1", temperature=0)
 search_tool = DuckDuckGoSearchRun()
+
 
 def chief_editor_node(state: ResearchState):
     """
     The 'Manager': Breaks the user's topic into sub-topics for parallel research.
     """
     print(f"--- [Chief Editor] Planning: {state['topic']} ---")
-    
+
     # Exercise: Implement the Chief Editor
     # Use the LLM to generate a 'ResearchPlan' from the topic.
     # The plan should contain 3-5 distinct sub-topics.
@@ -25,9 +26,10 @@ def chief_editor_node(state: ResearchState):
         f"Return 3 to 5 distinct sub-topics."
     )
     plan = planner.invoke(prompt)
-    
+
     return {"sub_topics": plan.sub_topics}
     # </solution>
+
 
 def research_worker_node(state: SubTaskState):
     """
@@ -36,7 +38,7 @@ def research_worker_node(state: SubTaskState):
     """
     topic = state["topic"]
     print(f"--- [Worker] Searching for: {topic} ---")
-    
+
     # Exercise: Implement the Research Worker
     # 1. Extract the 'topic' from the state.
     # 2. Use the 'search_tool' to find information.
@@ -48,16 +50,17 @@ def research_worker_node(state: SubTaskState):
         res = search_tool.invoke(topic)
     except Exception as e:
         res = f"Search failed: {e}"
-        
+
     return {"research_outputs": [f"## Subtopic: {topic}\n{res}\n"]}
     # </solution>
+
 
 def writer_node(state: ResearchState):
     """
     The 'Writer': Compiles all research outputs into a final report.
     """
     print("--- [Writer] Compiling Report ---")
-    
+
     # Exercise: Implement the Writer
     # 1. Combine all 'research_outputs' from the state.
     # 2. Prompt the generic LLM (not structured) to write a final report.
@@ -67,11 +70,11 @@ def writer_node(state: ResearchState):
     # Join all collected results
     # formatting depends on how Send returns data, usually it's a list in 'research_outputs'
     combined_content = "\n\n".join(state["research_outputs"])
-    
+
     prompt = f"""
     You are a technical writer. Compile the following research notes into a comprehensive final report.
     
-    Topic: {state['topic']}
+    Topic: {state["topic"]}
     
     Research Notes:
     {combined_content}
@@ -83,7 +86,7 @@ def writer_node(state: ResearchState):
     
     Report:
     """
-    
+
     response = llm.invoke(prompt)
     return {"final_report": response.content}
     # </solution>
