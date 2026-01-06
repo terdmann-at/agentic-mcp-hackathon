@@ -1,9 +1,14 @@
 import sys
+import mlflow
 from pathlib import Path
 from dotenv import load_dotenv
 
 # Load env vars
 load_dotenv()
+
+# Initialize MLflow
+mlflow.set_experiment("Deep Research Lab 01")
+mlflow.langchain.autolog()
 
 # Add the project root to sys.path so imports work
 # sys.path.append(str(Path(__file__).parent.parent))
@@ -35,46 +40,47 @@ def main():
 
     print("Type 'quit' to exit.")
 
-    while True:
-        user_input = input("\nWhat would you like to research? ")
-        if user_input.lower() in ["quit", "exit"]:
-            break
+    with mlflow.start_span(name="Research Conversation"):
+        while True:
+            user_input = input("\nWhat would you like to research? ")
+            if user_input.lower() in ["quit", "exit"]:
+                break
 
-        print(f"\nStarting research on: {user_input}")
+            print(f"\nStarting research on: {user_input}")
 
-        if mode == "1":
-            if run_react_agent:
-                print("Running ReAct Baseline...")
-                res = run_react_agent(user_input)
-                print(f"\nResult:\n{res}")
-            else:
-                print("Error: ReAct agent not found.")
+            if mode == "1":
+                if run_react_agent:
+                    print("Running ReAct Baseline...")
+                    res = run_react_agent(user_input)
+                    print(f"\nResult:\n{res}")
+                else:
+                    print("Error: ReAct agent not found.")
 
-        elif mode == "2":
-            if mas_app is None:
-                print(
-                    "Error: MAS app is not implemented yet. Implementing exercises is required."
-                )
-                print("Check src/mas/state.py, src/mas/nodes.py, and src/mas/graph.py")
-                continue
+            elif mode == "2":
+                if mas_app is None:
+                    print(
+                        "Error: MAS app is not implemented yet. Implementing exercises is required."
+                    )
+                    print("Check src/mas/state.py, src/mas/nodes.py, and src/mas/graph.py")
+                    continue
 
-            # Run MAS
-            initial_state = {
-                "topic": user_input,
-                "sub_topics": [],
-                "research_outputs": [],
-                "final_report": "",
-            }
-            config = {"configurable": {"thread_id": "1"}}
+                # Run MAS
+                initial_state = {
+                    "topic": user_input,
+                    "sub_topics": [],
+                    "research_outputs": [],
+                    "final_report": "",
+                }
+                config = {"configurable": {"thread_id": "1"}}
 
-            try:
-                final_state = mas_app.invoke(initial_state, config)
-                print("\n=== FINAL REPORT ===\n")
-                print(final_state.get("final_report", "No report generated."))
-                print("\n====================")
-            except Exception as e:
-                print(f"Error: {e}")
-                print("Did you implement the MAS exercises?")
+                try:
+                    final_state = mas_app.invoke(initial_state, config)
+                    print("\n=== FINAL REPORT ===\n")
+                    print(final_state.get("final_report", "No report generated."))
+                    print("\n====================")
+                except Exception as e:
+                    print(f"Error: {e}")
+                    print("Did you implement the MAS exercises?")
 
 
 def start_ui():

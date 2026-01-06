@@ -466,6 +466,17 @@
   ]
 ]
 
+#slide[
+  #title[What is great about LLMs?]
+  #set align(horizon)
+  #item-by-item[
+    - In-Context Learning
+    - instead of training a model on a dataset, we just write instructions
+    - the model can learn from examples in the prompt
+    - 0-shot performance / reasoning
+  ]
+]
+
 #let inverted-image(path) = {
   // This logic applies a visual inversion filter
   set image(color-filter: c => c.negate())

@@ -45,6 +45,26 @@ Run the Deep Agent integration test (Hard GAIA Question):
 uv run pytest tests/test_gaia.py
 ```
 
+## Observability
+
+This lab is instrumented with **MLflow** for tracing. You can inspect the internal steps, tool calls, and model interactions of your agents.
+
+### 1. Run the Agents
+Run your agents as usual. Traces will be automatically captured.
+
+```bash
+uv run deep-agent
+```
+
+### 2. View Traces
+Start the MLflow UI in a new terminal window:
+
+```bash
+uv run mlflow ui --port 5001
+```
+
+Then open `http://localhost:5001` in your browser.
+
 ## Solutions
 To see the answers or skip ahead:
 ```bash
