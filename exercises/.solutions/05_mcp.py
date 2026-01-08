@@ -32,9 +32,22 @@ async def main():
     print("Connecting to MCP Filesystem Server...")
 
     # <solution>
-    # TODO: Implement this
-    pass
-    # </solution>
+    # 2. Connect
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+
+            # 3. List Tools
+            tools = await session.list_tools()
+            print(f"\nConnected! Found {len(tools.tools)} tools:")
+            for t in tools.tools:
+                print(f" - {t.name}: {t.description[:50]}...")
+
+            # 4. Use a Tool (list_directory)
+            print("\nListing directory contents...")
+            result = await session.call_tool("list_directory", arguments={"path": "."})
+            print(result.content[0].text)
+            # </solution>
 
             # 5. Use a Tool (read_file)
             print("\nReading a file...")

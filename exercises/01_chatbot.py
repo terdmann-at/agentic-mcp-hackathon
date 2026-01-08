@@ -28,22 +28,8 @@ print(response.content)
 # %%
 from langchain_core.messages import HumanMessage, AIMessage
 
-# Maintain chat history
-chat_history = []
-
-print("Chat with me! (Type 'exit' to quit)")
-while True:
-    user_input = input("User: ")
-    if user_input.lower() in ["exit", "quit"]:
-        break
-
-    # Add user message
-    chat_history.append(HumanMessage(content=user_input))
-
-    # Get response
-    response = model.invoke(chat_history)
-    print(f"AI: {response.content}")
-
-    # Add AI message
-    chat_history.append(response)
+# <solution>
+# TODO: Implement this
+pass
+# </solution>
 

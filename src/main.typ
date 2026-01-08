@@ -1068,6 +1068,17 @@
 #my-new-section("Coffee break 2", "15.00")
 #my-new-section("Lab 2: MCP + advanced agents", "15.15")
 
+#slide[
+  #title[Lab 2: Building a deep-agent with MCP]
+  #set align(horizon)
+  - see the starter code at `exercises/lab_02_mcp_advanced/`
+  - Tasks:
+    - implement a coding-agent
+    - build a deep-agent that can delegate coding tasks to the coding-agent
+    - evaluate your system
+  - Bonus: Allow the system "to see"
+]
+
 
 #my-new-section("Conclusion", "16.45")
 

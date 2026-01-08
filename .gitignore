@@ -3,3 +3,4 @@
 *.DS_Store
 code/*
 exercises/lab_02_mcp_advanced/data/*
+.agent/*

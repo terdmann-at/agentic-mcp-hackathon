@@ -14,8 +14,17 @@ model = AzureChatOpenAI(deployment_name="gpt-4.1", temperature=0)
 
 # %%
 # <solution>
-# TODO: Implement this
-pass
+@tool
+def get_weather(location: str) -> str:
+    """Get the weather for a location."""
+    # Mock response
+    if "Berlin" in location:
+        return "Cloudy, 15C"
+    return "Sunny, 25C"
+
+tools = [get_weather]
+tools_by_name = {tool.name: tool for tool in tools}
+model_with_tools = model.bind_tools(tools)
 # </solution>
 
 
@@ -36,8 +45,14 @@ print(f"AI Call: {ai_msg.tool_calls}")
 
 # %%
 # <solution>
-# TODO: Implement this
-pass
+# 2. Execute tool calls
+for tool_call in ai_msg.tool_calls:
+    selected_tool = tools_by_name[tool_call["name"]]
+    tool_output = selected_tool.invoke(tool_call["args"])
+    print(f"Tool Output: {tool_output}")
+
+    # Append tool output to history
+    messages.append(ToolMessage(content=tool_output, tool_call_id=tool_call["id"]))
 # </solution>
 
 # 3. Get final response
