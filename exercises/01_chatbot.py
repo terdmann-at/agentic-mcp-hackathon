@@ -7,15 +7,18 @@
 
 # %%
 
-from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage
-from langchain_openai.chat_models.azure import AzureChatOpenAI
+from langchain_openai import ChatOpenAI
 
-load_dotenv()
-
-model = AzureChatOpenAI(
-    deployment_name="gpt-4.1",
-    temperature=0,
+model = ChatOpenAI(
+    api_key=dbutils.notebook.entry_point.getDbutils()  # pyrefly: ignore
+    .notebook()
+    .getContext()
+    .apiToken()
+    .get(),
+    base_url="https://adb-4139373877782449.9.azuredatabricks.net/serving-endpoints",
+    model="o3-playground",
+    temperature=1,
 )
 
 response = model.invoke("hi")

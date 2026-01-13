@@ -43,8 +43,18 @@ agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 # We ask the agent to perform a multi-step task that benefits from "writing things down"
 
 # <solution>
-# TODO: Implement this
-pass
+task = """
+I want you to research the following topic: "The history of the Python programming language".
+Since you cannot browse the web, just use your internal knowledge.
+
+Please follow this process:
+1. Create a plan and save it to "plan.txt".
+2. Write a brief history of Python (1 paragraph) and save it to "history.txt".
+3. Write a list of key versions (e.g. 1.0, 2.0, 3.0) and save it to "versions.txt".
+4. Finally, read "plan.txt" to check if you missed anything, and if done, tell me "Mission Accomplished".
+"""
+
+agent_executor.invoke({"input": task})
 # </solution>
 
 # %%

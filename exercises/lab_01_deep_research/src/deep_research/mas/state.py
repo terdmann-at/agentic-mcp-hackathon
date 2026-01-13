@@ -17,9 +17,6 @@ class ResearchState(TypedDict):
     """Global state for the entire graph."""
 
     topic: str
-    # TODO: Add 'sub_topics' list
-    # TODO: Add 'research_outputs' with a reducer (operator.add)
-    # TODO: Add 'final_report'
     sub_topics: List[str]
     research_outputs: Annotated[List[str], operator.add]
     final_report: str

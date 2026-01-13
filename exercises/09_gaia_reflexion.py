@@ -54,8 +54,49 @@ print(f"\nInitial Answer:\n{initial_answer}")
 
 # %%
 # <solution>
-# TODO: Implement this
-pass
+# 4. Critique (Reflector)
+# usage: Criticize the answer based on the requirements.
+critique_prompt = f"""
+You are a strict Evaluator. Verify if the following answer meets ALL the constraints of the question.
+
+Question: {gaia_question}
+
+Answer: {initial_answer}
+
+Checklist:
+1. Did it identify the painting "Embroidery from Uzbekistan"?
+2. Did it identify the ocean liner from "The Last Voyage"?
+3. Did it find the Oct 1949 breakfast menu?
+4. Is the list comma-separated?
+5. Is the order clockwise from 12 o'clock?
+6. Are fruits in plural form?
+
+Output your critique. If it is perfect, end with "STATUS: PASS". If not, provide specific instructions to fix it and end with "STATUS: FAIL".
+"""
+
+critic_response = model.invoke(critique_prompt).content
+print(f"\n--- Critique ---\n{critic_response}")
+
+# 5. Iterative Improvement (Loop)
+# If failed, we feed the critique back to the agent as "Context" to try again.
+
+if "STATUS: FAIL" in critic_response:
+    print("\n--- Attempt 2: Refining based on critique ---")
+
+    # We construct a new prompt for the agent including the history
+    retry_prompt = f"""
+    Previous Attempt Answer: {initial_answer}
+    
+    Critique of Previous Attempt:
+    {critic_response}
+    
+    Please try again to answer the original question, fixing the issues mentioned above.
+    Original Question: {gaia_question}
+    """
+
+    final_response = agent_executor.invoke({"input": retry_prompt})
+    final_answer = final_response["output"]
+    print(f"\nFinal Answer:\n{final_answer}")
 # </solution>
 
 else:

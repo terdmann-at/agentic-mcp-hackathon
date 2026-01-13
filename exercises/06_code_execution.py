@@ -28,8 +28,12 @@ model = AzureOpenAIModel(
 # %%
 
 # <solution>
-# TODO: Implement this
-pass
+# Create an agent that uses code execution
+# We grant it access to additional base tools if needed, but the core power is the Python executor.
+agent = CodeAgent(tools=[], model=model, add_base_tools=True)
+
+print("Solving simple math...")
+agent.run("What is the 10th fibonacci number?")
 # </solution>
 
 # %% [markdown]

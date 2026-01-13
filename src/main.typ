@@ -595,6 +595,11 @@
   #figure(image("/assets/img/RLHF_diagram.svg", height: 80%, fit: "contain"))
 ]
 
+#slide[
+  #title[Reasoning Models]
+  #figure(image("/assets/img/RLHF_diagram.svg", height: 80%, fit: "contain"))
+]
+
 
 #slide[
   #title[Building Chatbots]
@@ -885,6 +890,7 @@
 // TODO: finish this slide
 // TODO: add figure
 // see this https://www.ibm.com/think/topics/react-agent
+// Paper: https://arxiv.org/pdf/2210.03629
 #slide[
   #title[ReAct pattern]
   - design pattern for agentic systems
@@ -902,6 +908,26 @@
     - using langgraph
   - add one new tool
 ]
+
+#slide[
+  #title[Advanced Concepts: Evals]
+  - evals: rigorous error analysis process
+  - *the* factor predicting success of an Agentic AI project
+]
+
+#slide[
+  #title[Why Engineers Struggle with AI Agents]
+  #item-by-item[
+    - Deterministic vs. Probabilistic: Traditional engineering focuses on removing ambiguity (`Input A + Code B = Output C`), whereas agents require managing probability and "reasoning". // Illustration: Instead of being a Traffic Controller who owns the roads and lights, you must become a Dispatcher giving instructions to a driver (the LLM) who might take a shortcut or get lost.
+    - Testing vs. Evals: Transitioning from binary unit tests to evaluation frameworks that measure semantic accuracy and "trajectories."Illustration: Success is no longer an exact string match; it's whether the agent successfully achieved the user's intent over a 20-turn conversation.
+    - Text as the New State: Instead of forcing data into strict schemas or booleans, engineers must preserve natural language to maintain context. // Illustration: If a user says "This plan looks good, but focus on the US market," don't just store is_approved: true; store the full text so the downstream agent knows to adjust the strategy.
+    - Relinquishing Control: Moving from hard-coded microservice routes to a single "Brain" entry point where the LLM decides the flow based on tools.  //Illustration: Stop trying to hard-code a straight line from POST /cancel; trust the agent to navigate a loop where a user starts to cancel but ends up renewing for a discount.
+    - Errors as Inputs: In software, errors trigger exceptions; in agentic systems, errors are valuable feedback used to help the agent recover and pivot. // Illustration: If step 4 of a 5-minute task fails, don't crash the program; catch the error and feed it back to the agent so it can try a different approach.
+    - The Senior Engineer Trap: Highly experienced engineers often struggle more than juniors because they try to "code away" the model's flexibility. //Illustration: Seniors often spend weeks building rigid, complex pipelines to "fix" non-determinism, while a junior might ship a functional agent by simply trusting the model's instructions.
+  ]
+]
+
+
 
 #slide[
   #title[Advanced Concepts: self-improvement]
@@ -1054,12 +1080,6 @@
 ]
 
 #slide[
-  #title[Advanced Concepts: Evals]
-  - evals: rigorous error analysis process
-  - *the* factor predicting success of an Agentic AI project
-]
-
-#slide[
   #title[Advanced Concepts: Deep Agents]
   - agent with shell and code execution
 ]
@@ -1094,21 +1114,10 @@
   - David Silver:
     - "models will be trained with RL for computer use"
     - with this the models will go beyond human data ("era of experience")
+  - RLMs: https://alexzhang13.github.io/blog/2025/rlm/
 
 ]
 
-// == How does it work?
-//
-// So there is
-//
-// == RLHF
-//
-// - instruction following
-//
-//
-// = Retrieval Augmented Generation (RAG)
-//
-//
 // /*
 // = Appendix
 //
@@ -1144,7 +1153,6 @@
 // - Feb 2025 - Claude Code
 //
 // == GPT-1
-//
 //
 // #figure(
 // image("/assets/img/gpt1_paper.png", width: 80%),

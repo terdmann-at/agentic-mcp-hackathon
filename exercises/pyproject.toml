@@ -12,10 +12,25 @@ dependencies = [
     "langchain-community>=0.4.1",
     "langchain-openai>=1.1.6",
     "langgraph>=1.0.5",
+    "marimo>=0.18.4",
     "mcp>=1.25.0",
     "pandas>=2.3.3",
     "smolagents>=1.23.0",
+    "pymupdf>=1.25.0",
+    "ddgs>=9.10.0",
+    "helium>=3.2.0",
+    "webdriver-manager>=4.0.0",
 ]
 
 [tool.pyrefly]
+
+[tool.uv.workspace]
+members = [
+    "mcp/app-templates/my-mcp-hello-world",
+]
+
+[dependency-groups]
+dev = [
+    "jupytext>=1.18.1",
+]
 
