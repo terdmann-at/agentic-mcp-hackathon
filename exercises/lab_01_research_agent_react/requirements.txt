@@ -1,0 +1,6 @@
+streamlit
+databricks-langchain
+langgraph
+langchain-community
+ddgs
+pydantic
