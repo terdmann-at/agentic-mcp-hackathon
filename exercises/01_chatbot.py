@@ -1,25 +1,22 @@
 # %% [markdown]
 # # Building a Chatbot
 #
+# First, we'll need to install a couple packages.
+
+# %%
+# %pip install databricks-langchain langchain-core
+# %restart_python
+
+# %% [markdown]
 # Today we'll be working with GPT-4.1, deployed on Azure AI Foundry.
 # Below we see an example for how to instantiate the model and for how
 # to invoke it.
 
 # %%
-
+from databricks_langchain import ChatDatabricks
 from langchain_core.messages import AIMessage, HumanMessage
-from langchain_openai import ChatOpenAI
 
-model = ChatOpenAI(
-    api_key=dbutils.notebook.entry_point.getDbutils()  # pyrefly: ignore
-    .notebook()
-    .getContext()
-    .apiToken()
-    .get(),
-    base_url="https://adb-4139373877782449.9.azuredatabricks.net/serving-endpoints",
-    model="o3-playground",
-    temperature=1,
-)
+model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
 
 response = model.invoke("hi")
 print(response.content)
