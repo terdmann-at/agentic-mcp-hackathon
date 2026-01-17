@@ -877,7 +877,7 @@
     - using langgraph
 ]
 
-#my-new-section("Coffee break 1", "10.30")
+// #my-new-section("Coffee break 1", "10.30")
 
 #slide[
   #figure(image("/assets/img/coffee.jpg", height: 100%, fit: "cover"))
@@ -909,6 +909,8 @@
   - add one new tool
 ]
 
+#include "agentic_design_patterns.typ"
+
 #slide[
   #title[Advanced Concepts: Evals]
   - evals: rigorous error analysis process
@@ -929,13 +931,6 @@
 
 
 
-#slide[
-  #title[Advanced Concepts: self-improvement]
-  - let's look at more design patterns
-  - code execution
-  - reflexion
-  - how to evaluate?
-]
 
 #my-new-section("Lab 1: Deep research", "11.00")
 
@@ -973,15 +968,35 @@
 
   One year of MCP:
   - first released Nov 24
+  - supports tools, resources and prompts
+    - exetuble actions (API calls, running scripts)
+    - local files, db queries, cloud documents etc.
+    - structured prompts
   - donated to Linux Foundation
   - see https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation
 ]
 
+#slide[
+  #title[What is MCP?]
+]
+
+#slide[
+  #title[Why use MCP?]
+  - interoperability: solves the NxM problem
+  - reusing toolsets across different agents with slightly different APIs
+  - not required for tool calling: list of available tools it provided to LLM with every request
+]
+
+
 
 #slide[
   #title[Downsides of MCP]
+  - slower than calling a tool locally (needs network request etc)
   - letting agents write code to compose MCP much more effective
   - and much more token efficient
+  - MCP offers no way for servers to declare their runtime/dependency needs
+  - Since tools are drawn from arbitrary sources, they are not aware of what other tools are available to the agent. Their instructions can't account for the rest of the toolbox
+  - Agents tend to be less effective at tool use as the number of tools grows
 ]
 
 
@@ -1071,6 +1086,7 @@
   #title[Advanced Concepts: Memory]
   - memory allows the agent to self-improve
   - let's build a memory tool
+  - https://github.com/letta-ai/letta
 ]
 
 #slide[
@@ -1082,10 +1098,12 @@
 #slide[
   #title[Advanced Concepts: Deep Agents]
   - agent with shell and code execution
+  - Recursive Language Models
 ]
 
 
-#my-new-section("Coffee break 2", "15.00")
+// #my-new-section("Coffee break 2", "15.00")
+
 #my-new-section("Lab 2: MCP + advanced agents", "15.15")
 
 #slide[
@@ -1116,6 +1134,7 @@
     - with this the models will go beyond human data ("era of experience")
   - RLMs: https://alexzhang13.github.io/blog/2025/rlm/
 
+  - More readings: https://arxiv.org/html/2401.03428v1
 ]
 
 // /*
