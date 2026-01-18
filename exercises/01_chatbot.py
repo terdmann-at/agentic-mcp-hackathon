@@ -1,20 +1,22 @@
 # %% [markdown]
 # # Building a Chatbot
 #
-# First, we'll need to install a couple packages.
+# First, we'll need to install a couple packages. If using serverless, add the packages `langchain` and `databricks-langchain` to the environment.
+# If not using serverless run the below cell.
+#
 
 # %%
-# %pip install databricks-langchain langchain-core
+# %pip install langchain databricks-langchain
 # %restart_python
 
 # %% [markdown]
-# Today we'll be working with GPT-4.1, deployed on Azure AI Foundry.
+# Today we'll be working with Databricks LLMs.
 # Below we see an example for how to instantiate the model and for how
 # to invoke it.
 
 # %%
 from databricks_langchain import ChatDatabricks
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain.messages import AIMessage, HumanMessage
 
 model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
 
@@ -23,12 +25,9 @@ print(response.content)
 
 
 # %% [markdown]
-#
 # Now it's your turn. Solve the exercises below.
 #
 # To test your chatbot, run this on the terminal:
-#
-#       uv run 01_chatbot.py
 #
 
 
@@ -65,16 +64,54 @@ def chat_shell():
         chat_history.append(response)
 
 
-if __name__ == "__main__":
-    chat_shell()
+# %%
+# Run the chatbot
+chat_shell()
 
 
 # %%
-# Exercise 1.2 (Bonus):
-#
+# %% [markdown]
+# ## Exercise 1.2 (Bonus):
 # Use streamlit to build a simple chat interface.
 #
-#
+# To test it, deploy the app.py to databricks apps using the UI.
+
+# %%
+# %mkdir streamlit_app_01
+
+# %%
+# %%writefile streamlit_app_01/requirements.txt
+# databricks-langchain
+# langchain
+# streamlit
+
+# %%
+# %%writefile streamlit_app_01/app.yaml
+# command: ["streamlit", "run", "app.py"]
+
+# %%
+# %%writefile streamlit_app_01/app.py
 # <solution>
-# TODO: your code here
+import streamlit as st
+from databricks_langchain import ChatDatabricks
+
+st.title("Chatbot")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message("user" if message is HumanMessage else "assistant"):
+        st.markdown(message.content)
+
+if prompt := st.chat_input("What is up?"):
+    st.session_state.messages.append(HumanMessage(content=prompt))
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
+        response = model.invoke(st.session_state.messages)
+        st.markdown(response.content)
+        st.session_state.messages.append(response)
 # </solution>
