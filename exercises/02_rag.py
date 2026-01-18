@@ -2,34 +2,25 @@
 # # Exercise 2: RAG
 #
 # Goal: Implement a simple Retrieval Augmented Generation (RAG) system.
-# Expected time: 10 min
 #
-# To test your RAG system, run this on the terminal:
-#
-#       uv run 02_rag.py
-#
+
+# %%
+# %pip install databricks-langchain langchain-community pymupdf
+# %restart_python
 
 # %%
 import glob
 import os
 
-from dotenv.main import load_dotenv
+from databricks_langchain import ChatDatabricks, DatabricksEmbeddings
+from langchain.prompts import ChatPromptTemplate
+from langchain.vectorstores import InMemoryVectorStore
 from langchain_community.document_loaders import PyMuPDFLoader
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.vectorstores import InMemoryVectorStore
-from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-load_dotenv()
-
-model = AzureChatOpenAI(deployment_name="gpt-4.1", temperature=0)
-
-embed = AzureOpenAIEmbeddings(
-    model="text-embedding-3-small",
-    api_version=os.getenv("EMBED_API_VERSION"),
-    azure_endpoint=os.getenv("EMBED_ENDPOINT"),
-    api_key=os.getenv("EMBED_API_KEY"),
-)
+# %%
+model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
+embed = DatabricksEmbeddings(endpoint="databricks-gte-large-en")
 
 
 # %%

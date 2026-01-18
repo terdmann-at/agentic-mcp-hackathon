@@ -1,22 +1,20 @@
 # %% [markdown]
 # # Exercise 3: Tool Calling
 #
-# Goal: Use LangChain and OpenAI to call a custom tool.
-#
-# To test your solution, run:
-#
-#       uv run 03_tool_calling.py
+# Goal: Use LangChain to call a custom tool and handle the response.
 #
 
 # %%
-from dotenv.main import load_dotenv
-from langchain_core.messages import HumanMessage, ToolMessage
-from langchain_core.tools import tool
-from langchain_openai import AzureChatOpenAI
+# %pip install langchain databricks-langchain
+# %restart_python
 
-load_dotenv()
+# %%
+from databricks_langchain import ChatDatabricks
+from langchain.messages import HumanMessage, ToolMessage
+from langchain.tools import tool
 
-model = AzureChatOpenAI(deployment_name="gpt-4.1", temperature=0)
+# %%
+model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
 
 
 # %%
@@ -31,6 +29,7 @@ def get_weather(location: str) -> str:
     return "Sunny, 25C"
 
 
+# %%
 def main():
     tools = [get_weather]
     tools_by_name = {t.name: t for t in tools}
@@ -50,11 +49,11 @@ def main():
     messages.append(ai_msg)
     print(f"AI Call: {ai_msg.tool_calls}")
 
-    # 2. Execute tool calls manually
+    # Exercise 3.4: Execute tool calls manually and append results
     for tool_call in ai_msg.tool_calls:
         selected_tool = tools_by_name[tool_call["name"]]
-        
-        # Exercise 3.4: Invoke the selected tool
+
+        # Invoke the selected tool
         # <solution>
         tool_output = selected_tool.invoke(tool_call["args"])
         # </solution>
