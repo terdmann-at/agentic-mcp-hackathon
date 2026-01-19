@@ -34,10 +34,10 @@ except ImportError:
 from langchain_community.tools import DuckDuckGoSearchRun
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command, Send, interrupt
-from pydantic import BaseModel, Field
 
 # Initialize Model
 from llm import model as llm
+from pydantic import BaseModel, Field
 
 # Initialize Search Tool
 search_tool = DuckDuckGoSearchRun()
@@ -403,10 +403,12 @@ run_research_interactive()
 
 
 # %% [markdown]
-# ## Exercise 5: Benchmark Evaluation (GAIA)
+# ## Exercise 5 (Bonus): Benchmark Evaluation (GAIA)
 #
-# We will now evaluate our agent against the GAIA benchmark (Validation Level 1).
+# We will now evaluate our agent against some questions from the GAIA benchmark.
 # We compare the Deep Research Agent against a standard ReAct baseline.
+#
+# Your task is to play with the prompt, or the structure of the system to improve the score.
 
 # %%
 import re
