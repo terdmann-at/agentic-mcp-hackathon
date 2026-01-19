@@ -256,9 +256,7 @@ def run_gaia_eval():
 
 
 # %%
-# Run eval
-# run_gaia_eval()
-
+# Try the system out
 question = (
     "What is the 10th Fibonacci number (where F1=0, F2=1) multiplied by "
     "the square root of the birth year of the current Microsoft CEO? "
@@ -267,3 +265,8 @@ question = (
 )
 res = main_agent.invoke({"messages": [HumanMessage(question)]})
 print(f"Agent: {res['messages'][-1].content}")
+
+
+# %%
+# Exercise 2.7 (Bonus): Try to optimize the agent to do well on the eval.
+# run_gaia_eval()
