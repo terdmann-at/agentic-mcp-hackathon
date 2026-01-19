@@ -190,7 +190,7 @@ def web_search(query: str, max_results: int = 5):
 
 # %%
 search_query = "What is Altana?"
-# Exercise 4.10: Build and invoke the agent.
+# Exercise 4.9: Build and invoke the agent.
 # <solution>
 agent = build_agent([web_search])
 messages = [HumanMessage(content=search_query)]
@@ -201,8 +201,10 @@ for m in response["messages"]:
     m.pretty_print()
 
 # %% [markdown]
-# # Exercise 4.9: Let's use the functional API
+# ## Demo: Functional API
 #
+# LangGraph also supports a functional API that relies on decorators.
+# This can be more intuitive for python developers.
 
 
 def build_agent_func(tools):
@@ -218,7 +220,6 @@ def build_agent_func(tools):
     from langgraph.graph import add_messages
 
     # Step 2: Define model node
-
     @task
     def call_llm(messages: list[BaseMessage]):
         """LLM decides whether to call a tool or not"""
@@ -239,7 +240,7 @@ def build_agent_func(tools):
         return tool.invoke(tool_call)
 
     # Step 4: Define agent
-    @entrypoint()
+    @entrypoint(checkpointer=checkpointer)
     def agent(messages: list[BaseMessage]):
         model_response = call_llm(messages).result()
 
@@ -263,22 +264,33 @@ def build_agent_func(tools):
 
 agent = build_agent_func([add, multiply, divide])
 # Invoke
-messages = [HumanMessage(content="Add 3 and 4.")]
 for chunk in agent.stream(messages, stream_mode="updates"):
     print(chunk)
     print("\n")
 
 
 # %% [markdown]
-# # Exercise 4.10: Try asking what your last query was. How can we get this to work?
+# # Exercise 4.10 (Bonus): Persistence
+#
+# Try asking what your last query was. How can we get this to work?
 # Hint: We need a checkpointer: https://docs.langchain.com/oss/python/langgraph/persistence#checkpoints
 #
+# <solution>
+from langchain.checkpointers.memory import InMemorySaver
+from langchain.agents import create_agent
 
+checkpointer = InMemorySaver()
+agent = create_agent(tools, checkpointer=checkpointer)
 
-# %% [markdown]
-# # Exercise 4.11 (Bonus): Try out other architetural patterns.
-#
-#   For example:
-#       * add a router
-#       * add HITL (explicit confirmation of tool calls)
-#       * structured output
+# pass a config with a thread_id to the agent
+response_1 = agent.invoke({
+    "messages": [HumanMessage(content="Hello my name is Tore.")]}, 
+    config={"configurable": {"thread_id": "1"}})
+response_1["messages"][-1].pretty_print()
+
+# pass the same thread_id to continue the conversation
+response_2 = agent.invoke({
+    "messages": [HumanMessage(content="What is my name?")]}, 
+    config={"configurable": {"thread_id": "1"}})
+response_2["messages"][-1].pretty_print()
+# </solution>

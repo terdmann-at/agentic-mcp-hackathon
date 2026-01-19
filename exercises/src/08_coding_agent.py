@@ -69,9 +69,7 @@ def synthesize(content: str) -> str:
 # %%
 # Exercise 8.2: Initialize LocalPythonExecutor
 # Inject `search` and `synthesize` into the environment.
-# Hint: Use the `additional_authorized_imports` (optional) and pass a dictionary of tools to `send_tools` or initialization if supported.
-# Wait, `LocalPythonExecutor` from `smolagents` works by holding state.
-# We can inject variables directly into `interpreter.state`.
+# Hint: Inject tools into `interpreter.state`.
 # <solution>
 interpreter = LocalPythonExecutor(additional_authorized_imports=["datetime", "math"])
 # Inject our custom functions into the global scope of the interpreter

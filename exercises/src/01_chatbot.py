@@ -32,13 +32,13 @@ print(response.content)
 
 
 # %%
-# Exercise 1.1:
+# %%
+# Exercise 1: Console Chatbot
 #
 # Build a simple chatbot using langchain and the Chat Completions API.
 #
 # Fill in the lines inside <solution></solution>.
 #
-
 
 def chat_shell():
     # Initialize chat history
@@ -54,7 +54,8 @@ def chat_shell():
         chat_history.append(HumanMessage(content=user_input))
         # </solution>
 
-        # Exercise 1.2: Invoke th model to get a response.
+        # Exercise 1.2: Invoke the model to get a response.
+        # Hint: Use `model.invoke(...)`
         # <solution>
         response = model.invoke(chat_history)
         # </solution>
@@ -71,7 +72,7 @@ chat_shell()
 
 # %%
 # %% [markdown]
-# ## Exercise 1.2 (Bonus):
+# ## Exercise 2 (Bonus): Streamlit Chatbot
 # Use streamlit to build a simple chat interface.
 #
 # To test it, deploy the app.py to databricks apps using the UI.
@@ -91,9 +92,9 @@ chat_shell()
 
 # %%
 # %%writefile streamlit_app_01/app.py
-# <solution>
 import streamlit as st
 from databricks_langchain import ChatDatabricks
+from langchain_core.messages import HumanMessage, AIMessage
 
 st.title("Chatbot")
 
@@ -101,7 +102,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for message in st.session_state.messages:
-    with st.chat_message("user" if message is HumanMessage else "assistant"):
+    with st.chat_message("user" if isinstance(message, HumanMessage) else "assistant"):
         st.markdown(message.content)
 
 if prompt := st.chat_input("What is up?"):
@@ -111,7 +112,16 @@ if prompt := st.chat_input("What is up?"):
 
     with st.chat_message("assistant"):
         model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
+        
+        # Exercise 2.1: Invoke the model with the message history
+        # Hint: input to invoke should be st.session_state.messages
+        # <solution>
         response = model.invoke(st.session_state.messages)
+        # </solution>
+        
         st.markdown(response.content)
+        
+        # Exercise 2.2: Append the response to the session state messages
+        # <solution>
         st.session_state.messages.append(response)
-# </solution>
+        # </solution>

@@ -44,7 +44,7 @@ def main():
     tools = [get_weather]
     tools_by_name = {t.name: t for t in tools}
 
-    # Exercise 3.2: Bind the tool to the model
+    # Exercise 3.2: Bind the tool to the model. Use the .bind_tools method.
     # <solution>
     model_with_tools = model.bind_tools(tools)
     # </solution>

@@ -50,7 +50,8 @@ print(response.content)
 #
 
 # %%
-# Exercise 1.1:
+# %%
+# Exercise 7.1:
 #
 # Build a simple chatbot that can understand images using langchain.
 # The user should provide an image URL or path at the beginning.
@@ -101,7 +102,7 @@ def chat_shell_vision():
         if user_input.lower() in ["exit", "quit"]:
             break
 
-        # Exercise 1.1: Add user message and invoke model
+        # Exercise 7.1.1: Add user message and invoke model
         # <solution>
         chat_history.append(HumanMessage(content=user_input))
         response = model.invoke(chat_history)
@@ -116,7 +117,7 @@ def chat_shell_vision():
 
 # %%
 # %% [markdown]
-# ## Exercise 1.2 (Bonus):
+# ## Exercise 7.2 (Bonus):
 # Use streamlit to build a chat interface with image upload.
 #
 # To test it, deploy the app.py to databricks apps using the UI.
@@ -136,7 +137,6 @@ def chat_shell_vision():
 
 # %%
 # %%writefile streamlit_app_01_vision/app.py
-# <solution>
 import streamlit as st
 from databricks_langchain import ChatDatabricks
 from langchain_core.messages import HumanMessage, AIMessage

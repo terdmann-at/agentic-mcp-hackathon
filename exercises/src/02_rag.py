@@ -33,6 +33,7 @@ def create_vectorstore():
         return None
 
     # Exercise 2.1: Load all PDFs from the folder
+    # Hint: Use `PyMuPDFLoader(file).load()`
     for file in glob.glob(f"{pdf_folder}/*.pdf"):
         # <solution>
         loader = PyMuPDFLoader(file)
@@ -62,6 +63,7 @@ def create_vectorstore():
 # %%
 def retrieve(vectorstore, query: str):
     # Exercise 2.4: Implement a retriever using the vectorstore.
+    # Hint: Use `vectorstore.as_retriever()` and `.invoke(query)`
     # <solution>
     retriever = vectorstore.as_retriever()
     matching_docs = retriever.invoke(query)

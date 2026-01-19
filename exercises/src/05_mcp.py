@@ -79,14 +79,22 @@ from langgraph.prebuilt.tool_node import ToolNode
 # which we will use below.
 #
 # The host is just the url you are at currently.
+#
+# This client requires OAuth with a service principal for machine-to-machine (M2M) auth.
+# Follow the insturctions here in order to create a SP, grant the SP query permissions on your app and then mint a client id and secret.
+# https://docs.databricks.com/aws/en/dev-tools/auth/oauth-m2m
 
 custom_mcp_server_workspace_client = WorkspaceClient(
-    host="TODO",
-    client_id="TODO",
-    client_secret="TODO",
+    host="<workspace-url>",
+    client_id="<client-id>",
+    client_secret="<client-secret>"
     auth_type="oauth-m2m",  # Enables service principal authentication
 )
 
+#
+# Exercise 5.1: Configure the MCP Client with the server details
+# You need to fill in the `name` and `url` for the DatabricksMCPServer.
+# For this exercise, assume we have a server named "MyServer" running at the provided URL.
 databricks_mcp_client = DatabricksMultiServerMCPClient(
     [
         # DatabricksMCPServer(
@@ -94,9 +102,11 @@ databricks_mcp_client = DatabricksMultiServerMCPClient(
         #     url=f"{host}/api/2.0/mcp/functions/system/ai",
         # ),
         DatabricksMCPServer(
-            name="TODO",
-            url="TODO",
+            # <solution>
+            name="MyServer",
+            url="http://0.0.0.0:8000/sse",
             workspace_client=custom_mcp_server_workspace_client,
+            # </solution>
         ),
     ]
 )
