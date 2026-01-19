@@ -1,5 +1,9 @@
+.PHONY: all slides notebooks
 
-all: 2026-01-21_agents-mcp-workshop.pdf
+all: slides notebooks
 
-2026-01-21_agents-mcp-workshop.pdf: src/*.typ
-	bash compile.sh
+slides:
+	typst compile --root . src/main.typ 2026-01-21_agents-mcp-workshop.pdf
+
+notebooks:
+	bash compile_notebooks.sh
