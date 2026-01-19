@@ -1,12 +1,9 @@
-
 # %% [markdown]
 # # Lab 2: Multi-Agent System (MAS) with Progressive Disclosure
 #
 # In this lab, we build a Supervisor/Router agent that manages specialized sub-agents.
 #
-# **Pattern**: "Sub-agents as Tools" with Progressive Disclosure.
-#
-# The Main Agent does NOT see all tools at once (which would overwhelm the context).
+# The Main Agent does NOT see all tools at once (which can start overwhelm the context if we were to keep adding tools).
 # Instead, it has two meta-tools:
 # 1. `search_tools(query)`: Finds relevant specialized agents.
 # 2. `call_tool(name, task)`: Delegates the task to a specific agent.
@@ -18,7 +15,7 @@
 # Finally, we evaluate this system against the GAIA benchmark.
 
 # %%
-# %pip install langchain langgraph duckduckgo-search databricks-langchain smolagents pandas
+# %pip install langchain langgraph ddgs databricks-langchain smolagents pandas
 # %restart_python
 
 # %%
@@ -29,10 +26,10 @@ from ddgs import DDGS
 from langchain.agents import create_agent
 from langchain.messages import HumanMessage
 from langchain.tools import tool
-from smolagents import LocalPythonExecutor
 
 # Initialize generic model
 from llm import model as llm
+from smolagents import LocalPythonExecutor
 
 # %% [markdown]
 # ## 1. Define Sub-Agents (The Specialists)
@@ -41,7 +38,7 @@ from llm import model as llm
 # This ensures isolation of state between calls.
 
 
-# --- Search Agent (ReAct) ---
+# %%
 @tool
 def web_search(query: str, max_results: int = 5):
     """Run a web search"""
@@ -57,7 +54,6 @@ def make_search_agent():
     # </solution>
 
 
-# --- Coding Agent (Code Execution) ---
 @tool
 def exec_python(code: str):
     """
@@ -98,6 +94,7 @@ def make_coding_agent():
 #
 # We define the "Registry" of available skills.
 
+# %%
 TOOL_REGISTRY = {
     "SearchAgent": {
         "description": "Capable of searching the live internet for up-to-date facts, news, and general knowledge.",
@@ -164,6 +161,7 @@ def call_tool(tool_name: str, task: str) -> str:
 # The Main Agent only has access to `search_tools` and `call_tool`.
 
 
+# %%
 def make_main_agent():
     system_prompt = (
         "You are a helpful Assistant and Project Manager. "
@@ -193,6 +191,7 @@ main_agent = make_main_agent()
 # We evaluate the system on the GAIA validation set.
 
 
+# %%
 def run_gaia_eval():
     csv_path = "gaia_validation_level1.csv"  # Ensure this file exists in CWD
     try:
@@ -257,16 +256,14 @@ def run_gaia_eval():
 
 
 # %%
-if __name__ == "__main__":
-    # Test Run
-    # run_gaia_eval()
+# Run eval
+# run_gaia_eval()
 
-    # Manual Test
-    question = (
-        "What is the 10th Fibonacci number (where F1=0, F2=1) multiplied by "
-        "the square root of the birth year of the current Microsoft CEO? "
-        "Use the 'delegate_code_task' tool to perform the calculation using Python. "
-        "Round the final answer to 2 decimal places."
-    )
-    res = main_agent.invoke({"messages": [HumanMessage(question)]})
-    print(f"Agent: {res['messages'][-1].content}")
+question = (
+    "What is the 10th Fibonacci number (where F1=0, F2=1) multiplied by "
+    "the square root of the birth year of the current Microsoft CEO? "
+    "Use the 'delegate_code_task' tool to perform the calculation using Python. "
+    "Round the final answer to 2 decimal places."
+)
+res = main_agent.invoke({"messages": [HumanMessage(question)]})
+print(f"Agent: {res['messages'][-1].content}")
