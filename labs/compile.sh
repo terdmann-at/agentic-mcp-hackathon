@@ -8,7 +8,7 @@ for f in src/*.py; do
   output_ipynb="${filename%.py}.ipynb"
 
   # Only uncomment specific magics: # %pip and # %restart
-  sed -E 's/^# %(%?)(pip|restart|writefile)/%\1\2/g' "$f" >"$f.temp.py"
+  sed -E 's/^# %(%?)(pip|restart|writefile|write_and_run)/%\1\2/g' "$f" >"$temp_file"
 
   # Convert using percent format
   uvx jupytext --to ipynb "$temp_file" -o "$output_ipynb"

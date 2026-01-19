@@ -5,24 +5,30 @@
 #
 
 # %%
-# %pip install langchain langgraph duckduckgo-search databricks-langchain pydantic pandas polars datasets huggingface_hub typing_extensions
+# %pip install langchain langgraph ddgs databricks-langchain pydantic pandas datasets huggingface_hub typing_extensions
 # %restart_python
 
 # %%
 import os
 import re
-import pandas as pd
-from datasets import load_dataset
-from huggingface_hub import snapshot_download
 
-# Import the configured model (Judge) and the Agent Application (Solver)
-# Ensure src is in python path if running from root
-import sys
-if "src" not in sys.path:
-    sys.path.append("src")
+# %run lab_01_react.ipynb
+
+
 
 from llm import model as judge_llm
-from lab_01_deep_research import app
+
+try:
+    if "app" not in globals():
+        from deep_research_app import app
+except ImportError:
+    pass
+
+try:
+    if "run_react_agent" not in globals():
+        from lab_01_react import run_react_agent
+except ImportError:
+    pass
 
 # 1. Load GAIA Validation Set
 print("Loading GAIA dataset...")
@@ -35,10 +41,10 @@ else:
     print("Downloading dataset from HuggingFace...")
     data_dir = snapshot_download(repo_id="gaia-benchmark/GAIA", repo_type="dataset")
     dataset = load_dataset(data_dir, "2023_level1", split="validation")
-    
+
     # Convert to Pandas
     df = dataset.to_pandas()
-    
+
     # Save to CSV for next time
     print(f"Saving dataset to {CSV_FILE}...")
     df.to_csv(CSV_FILE, index=False)
@@ -48,7 +54,9 @@ else:
 # Conditions:
 # A. Annotator Metadata does NOT contain video/image/youtube
 # B. file_name is empty or null
-mask_no_multimedia = ~df["Annotator Metadata"].astype(str).str.lower().str.contains("video|image|youtube", regex=True)
+mask_no_multimedia = ~df["Annotator Metadata"].astype(str).str.lower().str.contains(
+    "video|image|youtube", regex=True
+)
 mask_no_file = df["file_name"].isnull() | (df["file_name"] == "")
 
 filtered_df = df[mask_no_multimedia & mask_no_file].head(5).copy()
@@ -100,12 +108,6 @@ def extract_score(judge_response):
 
 
 # 4. Run Evaluation Loop
-# Import the ReAct agent
-from lab_01_react import run_react_agent
-
-# ... (Previous imports remain)
-
-# 4. Run Evaluation Loop
 results = []
 for index, row in filtered_df.iterrows():
     task_id = row["task_id"]
@@ -118,13 +120,13 @@ for index, row in filtered_df.iterrows():
     # --- Agent 1: Deep Research ---
     predicted_dr = query_solver_model(question)
     print(f"[Deep Research Output]: {predicted_dr[:100]}...")
-    
+
     judge_resp_dr = query_judge_model(question, predicted_dr, truth, metadata)
     score_dr = extract_score(judge_resp_dr)
     print(f"Deep Research Score: {score_dr}")
 
     # --- Agent 2: ReAct Baseline ---
-    print(f"[ReAct] Researching...")
+    print("[ReAct] Researching...")
     predicted_react = run_react_agent(question)
     print(f"[ReAct Output]: {predicted_react[:100]}...")
 
@@ -140,7 +142,7 @@ for index, row in filtered_df.iterrows():
             "deep_research_pred": predicted_dr,
             "deep_research_score": score_dr,
             "react_pred": predicted_react,
-            "react_score": score_react
+            "react_score": score_react,
         }
     )
 
