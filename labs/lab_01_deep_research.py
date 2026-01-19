@@ -15,7 +15,7 @@
 # First, let's install the dependencies.
 
 # %%
-# %pip install langchain langgraph duckduckgo-search databricks-langchain pydantic
+# %pip install langchain langgraph duckduckgo-search databricks-langchain pydantic typing_extensions
 # %restart_python
 
 # %% [markdown]
@@ -24,7 +24,12 @@
 
 # %%
 import operator
-from typing import Annotated, List, NotRequired, TypedDict
+from typing import Annotated, List, TypedDict
+
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing_extensions import NotRequired
 
 from langchain_community.tools import DuckDuckGoSearchRun
 from langgraph.graph import END, START, StateGraph
@@ -322,6 +327,7 @@ app_hitl = workflow_hitl.compile(checkpointer=checkpointer)
 # 3. Resume with feedback.
 
 
+# %%
 def run_research_interactive():
     """
     Runs the research agent in an interactive loop.
