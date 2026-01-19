@@ -178,7 +178,7 @@ def make_main_agent():
     # Give it access to `search_tools` and `call_tool`.
     # <solution>
     return create_agent(
-        llm, tools=[search_tools, call_tool], state_modifier=system_prompt
+        llm, tools=[search_tools, call_tool], system_prompt=system_prompt
     )
     # </solution>
 
@@ -262,7 +262,7 @@ def run_gaia_eval():
 question = (
     "What is the 10th Fibonacci number (where F1=0, F2=1) multiplied by "
     "the square root of the birth year of the current Microsoft CEO? "
-    "Use the 'delegate_code_task' tool to perform the calculation using Python. "
+    "Delegate web search and coding tasks using appropriate tools. "
     "Round the final answer to 2 decimal places."
 )
 res = main_agent.invoke({"messages": [HumanMessage(question)]})
