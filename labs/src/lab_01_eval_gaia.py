@@ -1,19 +1,48 @@
+# %% [markdown]
+# # GAIA Evaluation
+#
+# This notebook evaluates the Deep Research Agent against the GAIA benchmark.
+#
+
+# %%
+# %pip install langchain langgraph duckduckgo-search databricks-langchain pydantic pandas polars datasets huggingface_hub typing_extensions
+# %restart_python
+
+# %%
+import os
 import re
 import pandas as pd
 from datasets import load_dataset
 from huggingface_hub import snapshot_download
 
 # Import the configured model (Judge) and the Agent Application (Solver)
+# Ensure src is in python path if running from root
+import sys
+if "src" not in sys.path:
+    sys.path.append("src")
+
 from llm import model as judge_llm
 from lab_01_deep_research import app
 
 # 1. Load GAIA Validation Set
 print("Loading GAIA dataset...")
-data_dir = snapshot_download(repo_id="gaia-benchmark/GAIA", repo_type="dataset")
-dataset = load_dataset(data_dir, "2023_level1", split="validation")
+CSV_FILE = "gaia_validation_level1.csv"
 
-# Convert to Pandas
-df = dataset.to_pandas()
+if os.path.exists(CSV_FILE):
+    print(f"Loading dataset from {CSV_FILE}...")
+    df = pd.read_csv(CSV_FILE)
+else:
+    print("Downloading dataset from HuggingFace...")
+    data_dir = snapshot_download(repo_id="gaia-benchmark/GAIA", repo_type="dataset")
+    dataset = load_dataset(data_dir, "2023_level1", split="validation")
+    
+    # Convert to Pandas
+    df = dataset.to_pandas()
+    
+    # Save to CSV for next time
+    print(f"Saving dataset to {CSV_FILE}...")
+    df.to_csv(CSV_FILE, index=False)
+
 
 # Filter dataset (exclude multimedia tools and file uploads for this text-only agent)
 # Conditions:
