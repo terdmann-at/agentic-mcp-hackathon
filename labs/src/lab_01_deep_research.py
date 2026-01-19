@@ -412,17 +412,25 @@ run_research_interactive()
 import re
 
 import pandas as pd
+from ddgs import DDGS
+from langchain import tool
 from langchain.agents import create_agent
-from langchain_community.tools import DuckDuckGoSearchRun
+
+
+@tool
+def web_search(query: str, max_results: int = 5):
+    """Run a web search"""
+    return str(DDGS().text(query, max_results=max_results))
+
 
 # 1. Setup ReAct Baseline
-agent_react = create_agent(llm, [DuckDuckGoSearchRun()])
+agent_react = create_agent(llm, [web_search])
 
 # 2. Load Dataset
 # Ensure create_gaia_dataset() has been run or the file exists.
 csv_path = "gaia_validation_level1.csv"
 try:
-    filtered_df = pd.read_csv(csv_path)[:5]
+    filtered_df = pd.read_csv(csv_path)[:2]
     print(f"Loaded {len(filtered_df)} tasks for evaluation.")
 except FileNotFoundError:
     print(
