@@ -7,3 +7,6 @@ slides:
 
 notebooks:
 	bash compile_notebooks.sh
+
+notebooks-student:
+	bash compile_notebooks.sh --student
