@@ -215,6 +215,7 @@ app = workflow.compile()
 
 # %%
 from deep_research_app import app
+
 res = app.invoke({"topic": "The future of Agentic AI"})
 print(res["final_report"])
 
@@ -239,7 +240,6 @@ class ResearchStateHITL(ResearchState):
     approved: NotRequired[bool]
 
 
-# %%
 def planner_node(state: ResearchStateHITL):
     print(f"--- [Planner] Planning: {state['topic']} ---")
 
@@ -342,6 +342,7 @@ app_hitl = workflow_hitl.compile(checkpointer=checkpointer)
 
 # %%
 from deep_research_app import app_hitl
+
 
 def run_research_interactive():
     """
