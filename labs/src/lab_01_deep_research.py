@@ -24,12 +24,6 @@
 
 # %%
 # %%
-# Initialize/Clear the app file
-with open("deep_research_app.py", "w") as f:
-    f.write("# Generated Deep Research App\n")
-
-# %%
-# %%writefile -a deep_research_app.py
 import operator
 from typing import Annotated, List, TypedDict
 
@@ -65,7 +59,6 @@ search_tool = DuckDuckGoSearchRun()
 
 
 # %%
-# %%writefile -a deep_research_app.py
 # Exercise 1: Define the State classes
 # <solution>
 class SubTaskState(TypedDict):
@@ -107,7 +100,6 @@ class ResearchPlan(BaseModel):
 
 
 # %%
-# %%writefile -a deep_research_app.py
 def chief_editor_node(state: ResearchState):
     print(f"--- [Chief Editor] Planning: {state['topic']} ---")
 
@@ -181,7 +173,6 @@ def writer_node(state: ResearchState):
 
 
 # %%
-# %%writefile -a deep_research_app.py
 def map_subtopics(state: ResearchState):
     # Exercise 3.1: Define the mapping logic
     # Return a list of `Send` objects, one for each sub-topic.
@@ -214,8 +205,6 @@ app = workflow.compile()
 # ### Run the Graph (Basic)
 
 # %%
-from deep_research_app import app
-
 res = app.invoke({"topic": "The future of Agentic AI"})
 print(res["final_report"])
 
@@ -233,7 +222,6 @@ print(res["final_report"])
 
 
 # %%
-# %%writefile -a deep_research_app.py
 # Define new state for HITL
 class ResearchStateHITL(ResearchState):
     critique: NotRequired[str]
@@ -302,7 +290,6 @@ def should_continue(state: ResearchStateHITL):
 # `Planner` -> `Reviewer` -> (conditional) -> `Planner` or `Workers`.
 
 # %%
-# %%writefile -a deep_research_app.py
 from langgraph.checkpoint.memory import InMemorySaver
 
 # Re-define graph
@@ -341,9 +328,6 @@ app_hitl = workflow_hitl.compile(checkpointer=checkpointer)
 
 
 # %%
-from deep_research_app import app_hitl
-
-
 def run_research_interactive():
     """
     Runs the research agent in an interactive loop.
@@ -416,5 +400,117 @@ def run_research_interactive():
 
 # %%
 # Run the interactive session
-if __name__ == "__main__":
-    run_research_interactive()
+run_research_interactive()
+
+
+# %% [markdown]
+# ## Exercise 5: Benchmark Evaluation (GAIA)
+#
+# We will now evaluate our agent against the GAIA benchmark (Validation Level 1).
+# We compare the Deep Research Agent against a standard ReAct baseline.
+
+# %%
+import re
+
+import pandas as pd
+from langchain.agents import create_agent
+from langchain_community.tools import DuckDuckGoSearchRun
+
+# 1. Setup ReAct Baseline
+agent_react = create_agent(llm, [DuckDuckGoSearchRun()])
+
+# 2. Load Dataset
+# Ensure create_gaia_dataset() has been run or the file exists.
+csv_path = "gaia_validation_level1.csv"
+try:
+    filtered_df = pd.read_csv(csv_path)[:5]
+    print(f"Loaded {len(filtered_df)} tasks for evaluation.")
+except FileNotFoundError:
+    print(
+        f"Dataset not found at {csv_path}. Please run 'python src/create_gaia.py' inside labs/ directory."
+    )
+    filtered_df = pd.DataFrame()
+
+
+# 3. Define Judge
+def query_judge_model(question, predicted, truth, metadata):
+    prompt = f"""
+    You are an impartial judge.
+
+    [CONTEXT/METADATA]: {metadata}
+    [QUESTION]: {question}
+    [GROUND TRUTH]: {truth}
+    [PREDICTED]: {predicted}
+
+    Compare Predicted to Ground Truth. Assign a score 1-10.
+    1 = Wrong, 10 = Perfect.
+    Also provide a short explanation.
+
+    Output format:
+    SCORE: [Score]
+    REASON: [Short explanation]
+    """
+    try:
+        return llm.invoke(prompt).content
+    except Exception as e:
+        return f"SCORE: 0 REASON: Error calling judge: {e}"
+
+
+def extract_score(judge_response):
+    match = re.search(r"SCORE:\s*(\d+)", judge_response)
+    return int(match.group(1)) if match else 0
+
+
+# 4. Evaluation Loop
+results = []
+if not filtered_df.empty:
+    for index, row in filtered_df.iterrows():
+        task_id = row["task_id"]
+        question = row["Question"]
+        truth = row["Final answer"]
+        metadata = str(row["Annotator Metadata"])
+
+        print(f"\nProcessing Task: {task_id}")
+
+        # --- Agent 1: Deep Research (Our App) ---
+        try:
+            # We use the autonomous 'app' from Exercise 3
+            result_dr = app.invoke({"topic": question})
+            predicted_dr = result_dr.get("final_report", "No report generated.")
+        except Exception as e:
+            predicted_dr = f"Error during research: {str(e)}"
+        print(f"[Deep Research Output]: {predicted_dr[:100]}...")
+
+        judge_resp_dr = query_judge_model(question, predicted_dr, truth, metadata)
+        score_dr = extract_score(judge_resp_dr)
+        print(f"Deep Research Score: {score_dr}")
+
+        # --- Agent 2: ReAct Baseline ---
+        print("[ReAct] Researching...")
+        try:
+            result_react = react_executor.invoke({"input": question})
+            predicted_react = result_react.get("output", "No output")
+        except Exception as e:
+            predicted_react = f"Error during ReAct: {str(e)}"
+        print(f"[ReAct Output]: {predicted_react[:100]}...")
+
+        judge_resp_react = query_judge_model(question, predicted_react, truth, metadata)
+        score_react = extract_score(judge_resp_react)
+        print(f"ReAct Score: {score_react}")
+
+        results.append(
+            {
+                "task_id": task_id,
+                "question": question,
+                "ground_truth": truth,
+                "deep_research_pred": predicted_dr,
+                "deep_research_score": score_dr,
+                "react_pred": predicted_react,
+                "react_score": score_react,
+            }
+        )
+
+    # 5. Results
+    results_df = pd.DataFrame(results)
+    print("\n=== Evaluation Results ===")
+    print(results_df)
