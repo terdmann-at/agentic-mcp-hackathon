@@ -39,12 +39,13 @@ with open("custom_mcp_server/requirements.txt", "w") as f:
 # %% [markdown]
 # # Deployment
 #
-# Head to "Compute" -> "Apps" -> "Create Custom App"
-#
-# Now let's define an agent that will use the tools from the MCP server.
+# * Head to "Compute" -> "Apps" -> "Create Custom App"
+# * Click Deploy and select the app folder (".../agent-mcp-hackathon/exercises/custom_mcp_server").
+# * You'll need to give permission to a service principle to access this app (more below).
 #
 
 # %% [markdown]
+# # MCP Client
 #
 # Now let's define an agent that will use the tools from the MCP server.
 #

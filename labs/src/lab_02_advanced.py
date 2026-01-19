@@ -269,4 +269,5 @@ print(f"Agent: {res['messages'][-1].content}")
 
 # %%
 # Exercise 2.7 (Bonus): Try to optimize the agent to do well on the eval.
+#
 # run_gaia_eval()

@@ -11,7 +11,7 @@
 # 2. `synthesize(data)`: Uses the LLM to summarize/synthesize findings.
 
 # %%
-# %pip install smolagents databricks-langchain duckduckgo-search langchain-community
+# %pip install smolagents databricks-langchain ddgs langchain-community
 # %restart_python
 
 # %%

@@ -15,7 +15,7 @@
 # First, let's install the dependencies.
 
 # %%
-# %pip install langchain langgraph duckduckgo-search databricks-langchain pydantic typing_extensions
+# %pip install langchain langgraph ddgs databricks-langchain pydantic typing_extensions
 # %restart_python
 
 # %% [markdown]
@@ -34,10 +34,10 @@ except ImportError:
 from langchain_community.tools import DuckDuckGoSearchRun
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command, Send, interrupt
+from pydantic import BaseModel, Field
 
 # Initialize Model
 from llm import model as llm
-from pydantic import BaseModel, Field
 
 # Initialize Search Tool
 search_tool = DuckDuckGoSearchRun()

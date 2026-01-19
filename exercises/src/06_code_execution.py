@@ -13,10 +13,9 @@ import pandas as pd
 from langchain.agents import create_agent
 from langchain.messages import AIMessage, HumanMessage
 from langchain.tools import tool
+from llm import model as llm
 from smolagents import LocalPythonExecutor
 from smolagents.local_python_executor import InterpreterError
-
-from llm import llm
 
 df = pd.read_csv(
     "https://raw.githubusercontent.com/datasciencedojo/datasets/refs/heads/master/titanic.csv"
@@ -54,6 +53,8 @@ def exec_python(code: str):
         return f"Stdout:\n{str(interpreter.state['_print_outputs'])}\nOutput: {output}"
     except InterpreterError as e:
         return f"There was an error: {e}"
+
+
 # </solution>
 
 
@@ -78,8 +79,6 @@ response = agent.invoke(
     }
 )
 
-
-
 # Print the message history
 for msg in response["messages"]:
     if type(msg) is AIMessage and msg.tool_calls:
@@ -100,8 +99,9 @@ for msg in response["messages"]:
 # 3. Implement `recall_memory(query: str)` to search the store using semantic search.
 
 import uuid
+
 from langgraph.store.memory import InMemoryStore
-from llm import embeddings, embedding_dimensions
+from llm import embedding_dimensions, embeddings
 
 # <solution>
 # Initialize the store with the embedding model and dimensions
@@ -112,12 +112,13 @@ memory_store = InMemoryStore(
     }
 )
 
+
 @tool
 def create_memory(key: str, value: str, category: str = "result"):
     """
     Stores a piece of information in long-term memory.
     Useful for saving results to avoid re-calculation, or errors to avoid repeating them.
-    
+
     Args:
         key: A short descriptive key or title for the memory.
         value: The content/details to remember.
@@ -129,19 +130,18 @@ def create_memory(key: str, value: str, category: str = "result"):
     # Namespace based on category
     namespace = ("global", category)
     memory_id = str(uuid.uuid4())
-    
+
     memory_store.put(
-        namespace,
-        memory_id,
-        {"key": key, "value": value, "category": category}
+        namespace, memory_id, {"key": key, "value": value, "category": category}
     )
     return f"Stored memory {memory_id} in category '{category}'"
+
 
 @tool
 def recall_memory(query: str, category: str = "result"):
     """
     Retrieves information from long-term memory based on a query.
-    
+
     Args:
         query: Search term to find relevant memories using semantic search.
         category: The category to search in. use 'result' for past analysis, 'error' for coding patterns/restrictions.
@@ -149,16 +149,20 @@ def recall_memory(query: str, category: str = "result"):
     namespace = ("global", category)
     # Search for top 3 most relevant memories
     results = memory_store.search(namespace, query=query, limit=3)
-    
+
     if not results:
         return f"No relevant memories found in category '{category}'."
-    
+
     formatted_results = []
     for item in results:
         content = item.value
-        formatted_results.append(f"[{content['category']}] {content['key']}: {content['value']}")
-        
+        formatted_results.append(
+            f"[{content['category']}] {content['key']}: {content['value']}"
+        )
+
     return "Found memories:\n" + "\n".join(formatted_results)
+
+
 # </solution>
 
 
@@ -195,11 +199,21 @@ response2 = memory_agent.invoke(
     {
         "messages": [
             HumanMessage(
-                "Do you remember the mean age of the passengers? Check your memory."
+                "Do you remember the mean age of the passengers? "
+                "Try recalling past analyses."
             )
         ]
     }
 )
 print(response2["messages"][-1].content)
 
-
+# %%
+# Print the message history
+for msg in response2["messages"]:
+    if type(msg) is AIMessage and msg.tool_calls:
+        print("=" * 20 + " Code " + "=" * 20)
+        if "code" in msg.tool_calls[0]["args"]:
+            print(msg.tool_calls[0]["args"]["code"])
+        print("=" * 50)
+    print(msg.content)
+    print("\n")
