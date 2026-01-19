@@ -5,77 +5,24 @@
 #
 
 # %%
-# %pip install langchain langgraph ddgs databricks-langchain pydantic pandas datasets huggingface_hub typing_extensions
+# %pip install langchain langgraph ddgs databricks-langchain pydantic pandas typing_extensions
 # %restart_python
 
 # %%
-import os
 import re
 
-# %run lab_01_react.ipynb
-
-
+import pandas as pd
+from deep_research_app import app as research_agent
+from langchain.agents import create_agent
+from langchain_community.tools import DuckDuckGoSearchRun
 
 from llm import model as judge_llm
+from llm import model as llm
 
-try:
-    if "app" not in globals():
-        from deep_research_app import app
-except ImportError:
-    pass
-
-try:
-    if "run_react_agent" not in globals():
-        from lab_01_react import run_react_agent
-except ImportError:
-    pass
-
-# 1. Load GAIA Validation Set
-print("Loading GAIA dataset...")
-CSV_FILE = "gaia_validation_level1.csv"
-
-if os.path.exists(CSV_FILE):
-    print(f"Loading dataset from {CSV_FILE}...")
-    df = pd.read_csv(CSV_FILE)
-else:
-    print("Downloading dataset from HuggingFace...")
-    data_dir = snapshot_download(repo_id="gaia-benchmark/GAIA", repo_type="dataset")
-    dataset = load_dataset(data_dir, "2023_level1", split="validation")
-
-    # Convert to Pandas
-    df = dataset.to_pandas()
-
-    # Save to CSV for next time
-    print(f"Saving dataset to {CSV_FILE}...")
-    df.to_csv(CSV_FILE, index=False)
-
-
-# Filter dataset (exclude multimedia tools and file uploads for this text-only agent)
-# Conditions:
-# A. Annotator Metadata does NOT contain video/image/youtube
-# B. file_name is empty or null
-mask_no_multimedia = ~df["Annotator Metadata"].astype(str).str.lower().str.contains(
-    "video|image|youtube", regex=True
-)
-mask_no_file = df["file_name"].isnull() | (df["file_name"] == "")
-
-filtered_df = df[mask_no_multimedia & mask_no_file].head(5).copy()
+react_agent = create_agent(llm, [DuckDuckGoSearchRun()])
+filtered_df = pd.read_csv("gaia_validation_level1.csv")[:5]
 
 print(f"Loaded {len(filtered_df)} tasks for evaluation.")
-
-
-# 2. Define Solver Wrapper
-def query_solver_model(question):
-    """
-    Invokes the Deep Research Agent.
-    """
-    print(f"\n[Solver] Researching: {question[:50]}...")
-    try:
-        # invoke the graph with the question
-        result = app.invoke({"topic": question})
-        return result.get("final_report", "No report generated.")
-    except Exception as e:
-        return f"Error during research: {str(e)}"
 
 
 # 3. Define Judge Wrapper
@@ -118,7 +65,8 @@ for index, row in filtered_df.iterrows():
     print(f"\nProcessing Task: {task_id}")
 
     # --- Agent 1: Deep Research ---
-    predicted_dr = query_solver_model(question)
+    result = research_agent.invoke({"topic": question})
+    predicted_dr = result.get("final_report")
     print(f"[Deep Research Output]: {predicted_dr[:100]}...")
 
     judge_resp_dr = query_judge_model(question, predicted_dr, truth, metadata)
@@ -127,7 +75,8 @@ for index, row in filtered_df.iterrows():
 
     # --- Agent 2: ReAct Baseline ---
     print("[ReAct] Researching...")
-    predicted_react = run_react_agent(question)
+    result = react_agent.invoke({"messages": [question]})
+    predicted_react = result["messages"][-1].content
     print(f"[ReAct Output]: {predicted_react[:100]}...")
 
     judge_resp_react = query_judge_model(question, predicted_react, truth, metadata)
