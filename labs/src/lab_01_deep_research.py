@@ -23,31 +23,13 @@
 # Import necessary libraries and initialize the LLM and Tools.
 
 # %%
-from IPython.core.magic import register_cell_magic
-
-@register_cell_magic
-def write_and_run(line, cell):
-    """
-    Magic to write cell content to a file and then execute it.
-    Usage: %%write_and_run filename.py
-    """
-    argz = line.split()
-    file = argz[0]
-    mode = "w"
-    if len(argz) == 2 and argz[1] == "-a":
-        mode = "a"
-        
-    with open(file, mode) as f:
-        f.write(cell + "\n")
-        
-    get_ipython().run_cell(cell)
-
+# %%
 # Initialize/Clear the app file
 with open("deep_research_app.py", "w") as f:
     f.write("# Generated Deep Research App\n")
 
 # %%
-# %write_and_run -a deep_research_app.py
+# %%writefile -a deep_research_app.py
 import operator
 from typing import Annotated, List, TypedDict
 
@@ -83,7 +65,7 @@ search_tool = DuckDuckGoSearchRun()
 
 
 # %%
-# %write_and_run -a deep_research_app.py
+# %%writefile -a deep_research_app.py
 # Exercise 1: Define the State classes
 # <solution>
 class SubTaskState(TypedDict):
@@ -125,7 +107,7 @@ class ResearchPlan(BaseModel):
 
 
 # %%
-# %write_and_run -a deep_research_app.py
+# %%writefile -a deep_research_app.py
 def chief_editor_node(state: ResearchState):
     print(f"--- [Chief Editor] Planning: {state['topic']} ---")
 
@@ -199,7 +181,7 @@ def writer_node(state: ResearchState):
 
 
 # %%
-# %write_and_run -a deep_research_app.py
+# %%writefile -a deep_research_app.py
 def map_subtopics(state: ResearchState):
     # Exercise 3.1: Define the mapping logic
     # Return a list of `Send` objects, one for each sub-topic.
@@ -232,6 +214,7 @@ app = workflow.compile()
 # ### Run the Graph (Basic)
 
 # %%
+from deep_research_app import app
 res = app.invoke({"topic": "The future of Agentic AI"})
 print(res["final_report"])
 
@@ -249,7 +232,7 @@ print(res["final_report"])
 
 
 # %%
-# %write_and_run -a deep_research_app.py
+# %%writefile -a deep_research_app.py
 # Define new state for HITL
 class ResearchStateHITL(ResearchState):
     critique: NotRequired[str]
@@ -319,7 +302,7 @@ def should_continue(state: ResearchStateHITL):
 # `Planner` -> `Reviewer` -> (conditional) -> `Planner` or `Workers`.
 
 # %%
-# %write_and_run -a deep_research_app.py
+# %%writefile -a deep_research_app.py
 from langgraph.checkpoint.memory import InMemorySaver
 
 # Re-define graph
@@ -358,6 +341,8 @@ app_hitl = workflow_hitl.compile(checkpointer=checkpointer)
 
 
 # %%
+from deep_research_app import app_hitl
+
 def run_research_interactive():
     """
     Runs the research agent in an interactive loop.
