@@ -189,12 +189,9 @@
 
 
 #slide[
-  #title[Exercise 06: Code execution and memory]
+  #title[Exercise 07: Code agent pattern]
   #block(inset: 2em)[
     - see `exercises/07_coding-agent.ipynb`
-    - Goals:
-      - build a simple data analysis agent
-      - give the agent memory
   ]
 ]
 

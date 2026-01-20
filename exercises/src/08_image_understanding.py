@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Image Understanding Chatbot
+# # Exercise 8: Image Understanding
 #
 # First, we'll need to install a couple packages. If using serverless, add the packages `langchain` and `databricks-langchain` to the environment.
 # If not using serverless run the below cell.
@@ -56,7 +56,7 @@ print(response.content)
 
 
 # %%
-# Exercise 7.1:
+# Exercise 8.1:
 #
 # Build a simple chatbot that can understand images using langchain.
 # The user should provide an image URL or path at the beginning.
@@ -113,7 +113,7 @@ def chat_shell_vision():
         if user_input.lower() in ["exit", "quit"]:
             break
 
-        # Exercise 7.1.1: Add user message and invoke model
+        # Exercise 8.1.1: Add user message and invoke model
         # <solution>
         chat_history.append(HumanMessage(content=user_input))
         response = model.invoke(chat_history)

@@ -140,6 +140,8 @@
   "Setup Hackathon",
   [Databricks],
   [Clone the repo at: "https://github.com/terdmann-at/agentic-mcp-hackathon.git"],
+  [Install dependencies from `requirements.txt` on your compute],
+  [Turn off AI completions (however do use them if you're stuck via Cmd+I): Settings/User -> "Autocomplete as you type", "Automatic Assistant Autocomplete"],
 )
 
 

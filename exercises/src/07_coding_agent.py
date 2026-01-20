@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Exercise 8: Coding Agent - "Plan in Code"
+# # Exercise 7: Coding Agent - "Plan in Code"
 #
 # In this exercise, we implement an agent that performs "Deep Research" by generating and executing Python code.
 # Instead of standard tool calling (JSON), the agent writes a Python script that orchestrates tool usage.
@@ -11,17 +11,17 @@
 # 2. `synthesize(data)`: Uses the LLM to summarize/synthesize findings.
 
 # %%
-# %pip install smolagents databricks-langchain ddgs langchain-community
+# %pip install langchain smolagents databricks-langchain ddgs langchain-community
 # %restart_python
 
 # %%
 
 from ddgs import DDGS
-from langchain_core.messages import HumanMessage, SystemMessage
-from smolagents import LocalPythonExecutor
+from langchain.messages import HumanMessage, SystemMessage
 
 # Initialize Model
 from llm import model as llm
+from smolagents import LocalPythonExecutor
 
 # %% [markdown]
 # ## 1. Define Tools as Python Functions
@@ -43,7 +43,7 @@ def search(query: str) -> str:
         return f"Search Error: {e}"
 
 
-# Exercise 8.1: Define the `synthesize` tool
+# Exercise 7.1: Define the `synthesize` tool
 # This tool should take a string (content) and use the LLM to summarize/synthesize it.
 # We want the agent to use this to process search results.
 # Hint: Use `llm.invoke` with a prompt.
@@ -67,7 +67,7 @@ def synthesize(content: str) -> str:
 # We configure `LocalPythonExecutor` and inject our tools.
 
 # %%
-# Exercise 8.2: Initialize LocalPythonExecutor
+# Exercise 7.2: Initialize LocalPythonExecutor
 # Inject `search` and `synthesize` into the environment.
 # Hint: Inject tools into `interpreter.state`.
 # <solution>
@@ -111,7 +111,7 @@ def run_coding_agent(user_query: str):
 
     messages = [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=user_query)]
 
-    # Exercise 8.3: Implement the generation and execution
+    # Exercise 7.3: Implement the generation and execution
     # 1. Invoke LLM to get code.
     # 2. Clean code (strip ```python ... ```).
     # 3. Execute using `interpreter`.
@@ -157,3 +157,4 @@ if __name__ == "__main__":
     )
     result = run_coding_agent(query)
     print(f"\n=== FINAL OUTPUT ===\n{result}")
+    # should be 2439.55
