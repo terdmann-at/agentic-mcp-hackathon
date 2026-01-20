@@ -105,6 +105,16 @@ Internal Logic/Plan:
 Output ONLY the Python code. Do not wrap in markdown blocks if possible, or I will strip them.
 """
 
+def clean_code(code: str) -> str:
+    """
+    Strips the code from markdown blocks if present.
+    """
+    if "```python" in code:
+        code = code.split("```python")[1].split("```")[0].strip()
+    elif "```" in code:
+        code = code.split("```")[1].split("```")[0].strip()
+    return code
+
 
 def run_coding_agent(user_query: str):
     print(f"--- [Agent] Goal: {user_query} ---")
@@ -115,34 +125,43 @@ def run_coding_agent(user_query: str):
     # 1. Invoke LLM to get code.
     # 2. Clean code (strip ```python ... ```).
     # 3. Execute using `interpreter`.
+    # 4. Handle errors and retry.
+    # Hint: Use a loop and feed back errors to the model.
     # <solution>
-    # 1. Generate Code
-    response = llm.invoke(messages)
-    code = response.content
+    MAX_RETRIES = 3
+    
+    for attempt in range(MAX_RETRIES):
+        # 1. Generate Code
+        response = llm.invoke(messages)
+        code = response.content
 
-    # 2. Clean Code
-    if "```python" in code:
-        code = code.split("```python")[1].split("```")[0].strip()
-    elif "```" in code:
-        code = code.split("```")[1].split("```")[0].strip()
+        # 2. Clean Code
+        code = clean_code(code)
 
-    print(f"--- [Agent] Generated Code ---\n{code}\n----------------------------")
+        print(f"--- [Agent] Generated Code (Attempt {attempt+1}/{MAX_RETRIES}) ---\n{code}\n----------------------------")
 
-    # 3. Execute
-    try:
-        # LocalPythonExecutor call returns the value of the last expression or print capture
-        # smolagents uses `interpreter(...)`
-        result = interpreter(code)
+        # 3. Execute
+        try:
+            # LocalPythonExecutor call returns the value of the last expression or print capture
+            # smolagents uses `interpreter(...)`
+            result = interpreter(code)
 
-        # We also capture stdout usually, but let's see what it returns
-        # Combine return value and any captured prints
-        captured_stdout = interpreter.state.get("_print_outputs", "")
+            # We also capture stdout usually, but let's see what it returns
+            # Combine return value and any captured prints
+            captured_stdout = interpreter.state.get("_print_outputs", "")
 
-        final_output = f"Stdout:\n{captured_stdout}\n\nReturn Value:\n{result}"
-        return final_output
+            final_output = f"Stdout:\n{captured_stdout}\n\nReturn Value:\n{result}"
+            return final_output
 
-    except Exception as e:
-        return f"Execution Code Error: {e}"
+        except Exception as e:
+            error_msg = f"Execution Code Error on attempt {attempt+1}: {e}"
+            print(error_msg)
+            
+            # Feed the error back to the model
+            messages.append(AIMessage(content=code))
+            messages.append(HumanMessage(content=f"The code failed to execute with the following error:\n{e}\n\nPlease fix the code and try again."))
+    
+    return "Failed to solve the task after max retries."
     # </solution>
 
 

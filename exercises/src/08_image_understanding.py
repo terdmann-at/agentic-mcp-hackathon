@@ -71,10 +71,14 @@ def chat_shell_vision():
 
     start_message_content = []
 
-    # Simple check if it's a URL or local file
-    if image_input.startswith("http"):
+    try:
+        # Exercise 8.1.1: Request processing of the image
         # <solution>
-        base64_image = encode_image_from_url(image_input)
+        if image_input.startswith("http"):
+             base64_image = encode_image_from_url(image_input)
+        else:
+             base64_image = encode_image(image_input)
+
         start_message_content.append(
             {
                 "type": "image_url",
@@ -82,20 +86,9 @@ def chat_shell_vision():
             }
         )
         # </solution>
-    else:
-        try:
-            # <solution>
-            base64_image = encode_image(image_input)
-            start_message_content.append(
-                {
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
-                }
-            )
-            # </solution>
-        except Exception as e:
-            print(f"Error loading image: {e}")
-            return
+    except Exception as e:
+        print(f"Error loading image: {e}")
+        return
 
     # Add initial instruction
     start_message_content.insert(
@@ -113,7 +106,7 @@ def chat_shell_vision():
         if user_input.lower() in ["exit", "quit"]:
             break
 
-        # Exercise 8.1.1: Add user message and invoke model
+        # Exercise 8.1.3: Add user message and invoke model
         # <solution>
         chat_history.append(HumanMessage(content=user_input))
         response = model.invoke(chat_history)

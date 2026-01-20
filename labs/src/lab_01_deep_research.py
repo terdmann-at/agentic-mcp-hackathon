@@ -231,6 +231,8 @@ class ResearchStateHITL(ResearchState):
 def planner_node(state: ResearchStateHITL):
     print(f"--- [Planner] Planning: {state['topic']} ---")
 
+    # Exercise 4.1: Implement the Planner
+    # Use the LLM to generate a 'ResearchPlan' from the topic.
     # <solution>
     planner = llm.with_structured_output(ResearchPlan)
 
@@ -254,7 +256,7 @@ def planner_node(state: ResearchStateHITL):
 
 
 def reviewer_node(state: ResearchStateHITL):
-    # Exercise 4: Add the interrupt
+    # Exercise 4.2: Add the interrupt
     # <solution>
     # Interrupt and wait for feedback
     # We allow the user to provide {"approved": True} or {"critique": "..."}

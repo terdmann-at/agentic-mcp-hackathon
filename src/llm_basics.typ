@@ -214,24 +214,31 @@
 
 
 #slide[
-  #title[Reasoning Models]
-  - The 4 main ways to build and improve reasoning models:
-    1. inference-time scaling: increasing computational resources during inference
-      - Chain of thought prompting is one version of that
-      - Another one is best of N: Generating multiple solutions and using a process-based verifier reward model (it has to be separately trained) to select the best response. Such a model learns how effective reasoning should look like
-    2. Pure reinforcement learning (RL)
-      - DeepSeek-R1-Zero was trained exclusively with RL and discovered that reasoning emerges as a behavior from that
-        - The accuracy reward uses the LeetCode compiler to verify coding answers and a deterministic system to evaluate mathematical responses.
-        - The format reward relies on an LLM judge to ensure responses follow the expected format, such as placing reasoning steps inside <think> tags.
-    3. Supervised finetuning and reinforcement learning (SFT + RL)
-      - multiple rounds of instruction based fine-tuning (similar to RLHF) and RL with accuracy rewards
-      - datasets of CoT data are generated and used for fine-tuning
-    4. Pure supervised finetuning (SFT) and distillation
-      - gives smaller models
-  // - A blue print: https://arxiv.org/abs/2501.12948
+  #title[Reasoning Models: 4 ways to improve reasoning]
+  #block(inset: 0.2em)[
+    #item-by-item[
+      1. inference-time scaling: increasing computational resources during inference
+        - Chain of thought prompting is one version of that
+        - Another one is best of N: Generating multiple solutions and using a process-based verifier reward model (it has to be separately trained) to select the best response. Such a model learns how effective reasoning should look like
+      2. Pure reinforcement learning (RL)
+        - DeepSeek-R1-Zero was trained exclusively with RL and discovered that reasoning emerges as a behavior from that
+          - The accuracy reward uses the LeetCode compiler to verify coding answers and a deterministic system to evaluate mathematical responses.
+          - The format reward relies on an LLM judge to ensure responses follow the expected format, such as placing reasoning steps inside <think> tags.
+    ]
+  ]
+]
 
-
-
+#slide[
+  #title[Reasoning Models: 4 ways to improve reasoning]
+  #block(inset: 0.2em)[
+    #item-by-item[
+      3. Supervised finetuning and reinforcement learning (SFT + RL)
+        - multiple rounds of instruction based fine-tuning (similar to RLHF) and RL with accuracy rewards
+        - datasets of CoT data are generated and used for fine-tuning
+      4. Pure supervised finetuning (SFT) and distillation
+        - train smaller models on output of larger models
+    ]
+  ]
 ]
 
 
@@ -328,21 +335,79 @@
 #slide[
   #title[Building Chatbots]
   #set align(horizon)
-  - we can call the OpenAI API to get a completion
-  - how to we have a conversation?
-
-  // #reveal-code(lines: (1, 3, 6, 7))[```python
-  //     model = ChatOpenAI()
-  //     response = model.invoke("Hi")
-  //     response[""]
-  // ```]
-
-  ```python
+  #block(inset: 1em)[
+    - we can call the OpenAI API to get a completion
+    - how to we have a conversation?
+    #block(inset: 1em)[
+      ```python
       model = ChatOpenAI()
-      response = model.invoke("Hi")
-      print(response.content)
-  ```
+      messages = []
+      while True:
+        user_input = input("User: ")
+        messages.append(("user", user_input))
+        response = model.invoke(messages)
+        messages.append(("assistant", response.content))
+        print(f"AI: {response.content}")
+      ```
+    ]
+  ]
 ]
+
+#show raw.where(block: true): block.with(fill: luma(240), inset: 1em, radius: 0.5em, width: 100%)
+
+#slide[
+  #title[Building Chatbots: LangGraph]
+  #block(inset: (x: 3em, y: 0em))[
+    #set text(size: 15pt)
+    ```python
+    from langchain_openai import ChatOpenAI
+    from langgraph.checkpoint.memory import MemorySaver
+    from langgraph.graph import START, MessagesState, StateGraph
+    model = ChatOpenAI()
+    graph = (
+      StateGraph(MessagesState)
+      .add_node(
+        "chatbot",
+        lambda state: {"messages": model.invoke(state["messages"])}
+      )
+      .add_edge(START, "chatbot")
+      .compile(checkpointer=MemorySaver())
+    )
+    config = {"configurable": {"thread_id": "1"}}
+    while True:
+      user_input = input("User: ")
+      response = graph.invoke({"messages": [("user", user_input)]}, config)
+      print(f"AI: {response['messages'][-1].content}")
+    ```
+  ]
+]
+
+#slide[
+  #title[Building Chatbots: LangGraph (functional)]
+  #block(inset: (x: 3em, y: 0em))[
+    #set text(size: 15pt)
+    ```python
+    from langgraph.checkpoint.memory import MemorySaver
+    from langgraph.func import entrypoint
+
+    @entrypoint(checkpointer=MemorySaver())
+    def chat_workflow(new_message: str, previous: list = None):
+        history = previous or []
+        history.append(("user", new_message))
+        response = model.invoke(history)
+        history.append(("assistant", response.content))
+        return history
+
+    config = {"configurable": {"thread_id": "1"}}
+    while True:
+        user_input = input("User: ")
+        output = chat_workflow.invoke(user_input, config=config)
+        print("AI: ", output[-1][1])
+
+    ```
+  ]
+]
+
 
 #slide[
   #title[Exercise 1]
