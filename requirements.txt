@@ -1,0 +1,11 @@
+langchain 
+langgraph 
+databricks-langchain 
+langchain-community 
+smolagents
+ddgs 
+pymupdf
+pydantic 
+typing_extensions
+pandas
+scikit-learn

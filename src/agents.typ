@@ -169,15 +169,16 @@
 
 #slide[
   #title[Evaluations]
-  #item-by-item[
-    - evals: rigorous error analysis process
-    - *the* factor predicting success of an Agentic AI project
-    - Requires a shift of mind set:
-      - Deterministic vs. Probabilistic //: Traditional engineering focuses on removing ambiguity (`Input A + Code B = Output C`), whereas agents require managing probability and "reasoning". // Illustration: Instead of being a Traffic Controller who owns the roads and lights, you must become a Dispatcher giving instructions to a driver (the LLM) who might take a shortcut or get lost.
-      - Testing vs. Evals //: Transitioning from binary unit tests to evaluation frameworks that measure semantic accuracy and "trajectories."Illustration: Success is no longer an exact string match; it's whether the agent successfully achieved the user's intent over a 20-turn conversation.
-      - Text as the state: must preserve natural language to maintain context // Illustration: If a user says "This plan looks good, but focus on the US market," don't just store is_approved: true; store the full text so the downstream agent knows to adjust the strategy.
-      - Relinquishing Control: instead of hard coding the control flow, let the LLM decide  //Illustration: Stop trying to hard-code a straight line from POST /cancel; trust the agent to navigate a loop where a user starts to cancel but ends up renewing for a discount.
-      - Errors as Inputs: errors are valuable feedback used to help the agent recover and pivot // Illustration: If step 4 of a 5-minute task fails, don't crash the program; catch the error and feed it back to the agent so it can try a different approach.
+  #block(inset: 2em)[
+    #item-by-item[
+      - evals: rigorous error analysis process
+      - *the* factor predicting success of an Agentic AI project
+      - requires a shift of mind set
+      - deterministic vs. Probabilistic //: Traditional engineering focuses on removing ambiguity (`Input A + Code B = Output C`), whereas agents require managing probability and "reasoning". // Illustration: Instead of being a Traffic Controller who owns the roads and lights, you must become a Dispatcher giving instructions to a driver (the LLM) who might take a shortcut or get lost.
+      - testing vs. evals //: Transitioning from binary unit tests to evaluation frameworks that measure semantic accuracy and "trajectories."Illustration: Success is no longer an exact string match; it's whether the agent successfully achieved the user's intent over a 20-turn conversation.
+      - errors as inputs:
+        - errors are valuable feedback used to help the agent recover and pivot // Illustration: If step 4 of a 5-minute task fails, don't crash the program; catch the error and feed it back to the agent so it can try a different approach.
+    ]
   ]
 ]
 

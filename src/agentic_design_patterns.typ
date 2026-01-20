@@ -38,9 +38,30 @@
 
 #imgslide(
   "Agentic Design Patterns: Reflection",
-  "../assets/img/reflection-pattern.gif",
-  "Source: https://blog.dailydoseofds.com/p/5-agentic-ai-design-patterns",
+  "../assets/img/bala-reflection-pattern.png",
+  "Source: https://machinelearningmastery.com/7-must-know-agentic-ai-design-patterns",
 )
+
+#imgslide(
+  "Agentic Design Patterns: HITL pattern",
+  "../assets/img/bala-hil-pattern.png",
+  "Source: https://machinelearningmastery.com/7-must-know-agentic-ai-design-patterns",
+)
+
+
+#imgslide(
+  "Agentic Design Patterns: Planning pattern",
+  "../assets/img/bala-planning-pattern.png",
+  "Source: https://machinelearningmastery.com/7-must-know-agentic-ai-design-patterns",
+)
+
+
+#imgslide(
+  "Agentic Design Patterns: Multi-agent pattern",
+  "../assets/img/bala-multiagent-pattern.png",
+  "Source: https://machinelearningmastery.com/7-must-know-agentic-ai-design-patterns",
+)
+
 
 // see this https://www.ibm.com/think/topics/react-agent
 // Paper: https://arxiv.org/pdf/2210.03629
@@ -63,27 +84,12 @@
 ]
 
 #slide[
-  #title[More patterns]
-  #item-by-item[
-    - router pattern: coordinator / dispatcher
-    - parallel / fan-out / gather
-    - supervisor pattern
-    - generator-critic pattern (iterative refinement)
-    - human in the loop (HITL)
-    - planning
-  ]
-]
-
-
-
-#slide[
-  #title[Exercise 3]
+  #title[Exercise 4]
   #set align(horizon)
   - time to build our first agent!
-  - see `notebooks/ReAct.py`
+  - see `exercises/04_react.ipynb`
     - write from scratch
     - using langgraph
-  - add one new tool
 ]
 
 
@@ -127,31 +133,31 @@
 // ]
 //
 
-#slide[
-  #title[Agentic Design Patterns: Supervisor Pattern]
-  #set text(size: 15pt)
-  ```python
-
-  # Define subagents (e.g., research and writing specialists)
-  research_agent = create_agent(model="gpt-4o", prompt="You are a research specialist...")
-  writer_agent = create_agent(model="gpt-4o", prompt="You are a writing specialist...")
-
-  # Registry of available subagents
-  SUBAGENTS = { "research": research_agent, "writer": writer_agent, }
-
-  @tool
-  def task(agent_name: str, description: str) -> str:
-      """Launch an ephemeral subagent for a task."""
-      agent = SUBAGENTS[agent_name]
-      result = agent.invoke({"messages": [{"role": "user", "content": description}]})
-      return result["messages"][-1].content
-
-  # Main coordinator agent
-  main_agent = create_agent(
-      model="gpt-4o",
-      tools=[task],
-      system_prompt="You coordinate sub-agents. Available: research, writer. Use the task tool ...."
-  )
-  ```
-]
+// #slide[
+//   #title[Agentic Design Patterns: Supervisor Pattern]
+//   #set text(size: 15pt)
+//   ```python
+//
+//   # Define subagents (e.g., research and writing specialists)
+//   research_agent = create_agent(model="gpt-4o", prompt="You are a research specialist...")
+//   writer_agent = create_agent(model="gpt-4o", prompt="You are a writing specialist...")
+//
+//   # Registry of available subagents
+//   SUBAGENTS = { "research": research_agent, "writer": writer_agent, }
+//
+//   @tool
+//   def task(agent_name: str, description: str) -> str:
+//       """Launch an ephemeral subagent for a task."""
+//       agent = SUBAGENTS[agent_name]
+//       result = agent.invoke({"messages": [{"role": "user", "content": description}]})
+//       return result["messages"][-1].content
+//
+//   # Main coordinator agent
+//   main_agent = create_agent(
+//       model="gpt-4o",
+//       tools=[task],
+//       system_prompt="You coordinate sub-agents. Available: research, writer. Use the task tool ...."
+//   )
+//   ```
+// ]
 

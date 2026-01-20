@@ -69,12 +69,14 @@
 #slide[
   #title[How does text-generation with LLMs work?]
   #set align(horizon)
-  #item-by-item[
-    - given some words $w_1, w_2, ..., w_t$, LLMs predict the probability of the next word $w_(t+1)$
-    - LLMs are a model of: $ P_theta (w_(t+1) | w_1, w_2, ..., w_t) $
-    - the model weights $theta$ are pre-trained on huge amounts of text
-    - and then trained some more (post-training) to follow instructions
-    - the words $w_1, ...$ are the "prompt" and allow us to use the model
+  #block(inset: 2em)[
+    #item-by-item[
+      - given some words $w_1, w_2, ..., w_t$, LLMs predict the probability of the next word $w_(t+1)$
+      - LLMs are a model of: $ P_theta (w_(t+1) | w_1, w_2, ..., w_t) $
+      - the model weights $theta$ are pre-trained on huge amounts of text
+      - and then trained some more (post-training) to follow instructions
+      - the words $w_1, ...$ are the "prompt" and allow us to use the model
+    ]
   ]
 ]
 
@@ -83,14 +85,16 @@
 #slide[
   #title[What is so great about LLMs?]
   #set align(horizon)
-  #item-by-item[
-    - In-Context Learning
+  #block(inset: 2em)[
+    #item-by-item[
+      - In-Context Learning
       - instead of training a model on a dataset, we just write instructions
       - the model can learn from examples in the prompt
       - 0-shot performance / reasoning
-    - Why does it work?
+      - Why does it work?
       - large datasets
       - attention mechanism
+    ]
   ]
 ]
 

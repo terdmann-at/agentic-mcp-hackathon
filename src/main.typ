@@ -11,6 +11,9 @@
 )
 
 #set text(size: 20pt, font: "Helvetica Neue", fill: black)
+// #set text(size: 20pt, font: "Google Sans Flex 120pt", fill: black)
+// #set text(size: 20pt, font: "Apple SD Gothic Neo", fill: black)
+// #set text(size: 20pt, font: "Iosevka NF", fill: black)
 
 
 #slide[
@@ -74,62 +77,7 @@
 
 #my-new-section("Lunch", "12.00")
 
-#my-new-section("MCP", "13.00")
-
-#slide[
-  #title[Model Context Protocol (MCP)]
-  #block(inset: 2em)[
-    #item-by-item[
-      One year of MCP:
-      - first released Nov 24
-      - supports tools, resources and prompts
-        - exetuble actions (API calls, running scripts)
-        - local files, db queries, cloud documents etc.
-        - structured prompts
-      - donated to Linux Foundation: https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation
-    ]
-  ]
-]
-
-#slide[
-  #title[Why use MCP?]
-  #block(inset: 2em)[
-    #item-by-item[
-      - interoperability: solves the NxM problem
-      - reusing toolsets across different agents with slightly different APIs
-      - not required for tool calling: list of available tools it provided to LLM with every request
-    ]
-  ]
-]
-
-
-
-#slide[
-  #title[Downsides of MCP]
-  #block(inset: 2em)[
-    #item-by-item[
-      - slower than calling a tool locally (needs network request etc)
-      - letting agents write code to compose MCP much more effective
-      - and much more token efficient
-      - MCP offers no way for servers to declare their runtime/dependency needs
-      - Since tools are drawn from arbitrary sources, they are not aware of what other tools are available to the agent. Their instructions can't account for the rest of the toolbox
-      - Agents tend to be less effective at tool use as the number of tools grows
-    ]
-  ]
-]
-
-
-// TODO: fill this in
-#slide[
-  #title[Exercise 5]
-  #block(inset: 2em)[
-    #item-by-item[
-      - see `exercises/05_mcp.ipynb`
-        - write MCP server
-        - connect to MCP server
-    ]
-  ]
-]
+#include "mcp.typ"
 
 #slide[
   #title[Dynamic MCP]
@@ -183,39 +131,79 @@
 
 #my-new-section("Agents: Advanced Concepts", "14.00")
 
+#slide[
+  #title[Advanced Concepts: Coding agents]
+  #block(inset: 2em)[
+    #item-by-item[
+      - LLMs are good at code. Why must tool-calls be written in JSON?
+      - https://blog.cloudflare.com/code-mode/: #block(inset: 1em)[
+          #set text(size: 15pt)
+          "[...] We tried something different: Convert the MCP tools into a TypeScript API, and then ask an LLM to write code that calls that API. [...]
+          We found agents are able to handle many more tools, and more complex tools, when those tools are presented as a TypeScript API rather than directly."
+          [...]
+          The approach really shines when an agent needs to string together multiple calls. With the traditional approach, the output of each tool call must feed into the LLM's neural network, just to be copied over to the inputs of the next call, wasting time, energy, and tokens. When the LLM can write code, it can skip all that, and only read back the final results it needs.
+        ]
+      - `smolagents` library is based on this pattern
+    ]
+  ]
+]
+
+
 #imgslide(
   "Code agent",
   "/assets/img/code_agent.png",
   "Source: https://huggingface.co/blog/open-deep-research#the-gaia-benchmark",
 )
 
+#imgslide(
+  "Magentic One",
+  "../assets/img/magentic_orchestrator.png",
+  "Source: https://www.microsoft.com/en-us/research/articles/magentic-one-a-generalist-multi-agent-system-for-solving-complex-tasks/",
+)
+
 
 #slide[
   #title[Advanced Concepts: Memory]
-  - memory allows the agent to self-improve
-  - let's build a memory tool
-  - https://github.com/letta-ai/letta
+  #block(inset: 2em)[
+    #item-by-item[
+      - in principle, memory allows the agent to self-improve
+      - in practice, no one knows yet how to best make use of it
+      - https://github.com/letta-ai/letta
+      - again, we can use tools:
+        - create memory after learning something
+        - recall memories given some query
+    ]
+  ]
 ]
 
-#slide[
-  - Exercise: deep coding agent with memory
-  - use to analyze data?
-  - remember what has been tried before
-]
 
 #slide[
-  #title[Advanced Concepts: Deep Agents]
-  - agent with shell and code execution
-  - Recursive Language Models
-  - Agents can increasingly tackle long-horizon tasks, with agent task length doubling every 7 months! But, long horizon tasks often span dozens of tool calls, which present cost and reliability challenges. Popular agents such as Claude Code and Manus use some common principles to address these challenges, including planning (prior to task execution), computer access (giving the agent access to a shell and a filesystem), and sub-agent delegation (isolated task execution).
+  #title[Exercise 06: Code execution and memory]
+  #block(inset: 2em)[
+    - see `exercises/06_code_execution.ipynb`
+    - Goals:
+      - build a simple data analysis agent
+      - give the agent memory
+  ]
+]
+
+
+#slide[
+  #title[Exercise 06: Code execution and memory]
+  #block(inset: 2em)[
+    - see `exercises/07_coding-agent.ipynb`
+    - Goals:
+      - build a simple data analysis agent
+      - give the agent memory
+  ]
 ]
 
 #slide[
   #title[The Risk: "What is the worst that can happen?"]
-  #block(inset: 2em)[
+  #block(inset: 1em)[
+    Even with Docker, a malicious or confused agent with root inside a container can cause damage if not properly sandboxed:
     #item-by-item[
-      Even with Docker, a malicious or confused agent with root inside a container can cause damage if not properly sandboxed:
-      - Host Filesystem Wipe: You mounted `-v ./data:/data`. If the agent runs `rm -rf /data/*`, it deletes the files on your actual laptop/server.
+      - Host Filesystem Wipe: If mounting `-v ./data:/data` and the agent runs `rm -rf /data/*`: this deletes the files on your actual laptop/server
       - Network Attacks: The agent can use curl or Python to scan your local network (192.168.1.x), attack other devices, or access internal services (like a local database) that have no password.
       - Resource Exhaustion (DoS): The agent could launch a "fork bomb" or fill the disk, crashing your host machine.
       - Container Escape (Rare): If there is a kernel vulnerability, running as root increases the chance of "escaping" the container to control the host OS.
@@ -223,13 +211,70 @@
   ]
 ]
 
+
 #slide[
   #title[The Risk: "Lethal trifecta"]
-  1. Access to private data
-  2. Ability to externally communicate
-  3. Exposure to untrusted content
+  #block(inset: 2em)[
+    #item-by-item[
+      1. Access to private data
+      2. Ability to externally communicate
+      3. Exposure to untrusted content
+    ]
+  ]
 ]
 
+
+#imgslide(
+  "Multimodal LLMs",
+  "../assets/img/multimodal-llms-1.jpg",
+  "Source: https://magazine.sebastianraschka.com/p/understanding-multimodal-llms",
+)
+
+#slide[
+  #title[Exercise 08: Image Understanding]
+  #block(inset: 2em)[
+    - see `exercises/08_image_understanding.ipynb`
+  ]
+]
+
+
+#slide[
+  #title[Advanced Concepts: Deep Agents]
+  #block(inset: 1em)[
+    #item-by-item[
+      - Agents can increasingly tackle long-horizon tasks
+        - agent task length doubling every 7 months
+      - But: long horizon tasks often span dozens of tool calls, which present cost and reliability challenges.
+      - Popular agents such as Claude Code and Manus use some common principles to address these challenges, including:
+        - planning (prior to task execution)
+        - computer access (giving the agent access to a shell and a filesystem)
+        - sub-agent delegation (isolated task execution)
+
+    ]
+  ]
+]
+
+#slide[
+  #title[Advanced Concepts: RLM]
+  #side-by-side(gutter: 3mm, columns: (1.5fr, 2fr))[
+    #block(inset: 1em)[
+      #item-by-item[
+        - Another recent innovation: Recursive Language Models (RLMs)
+        - RLM provides the illusion of near infinite context
+        - under the hood a language model manages, partitions, and recursively calls itself or another LM over the context accordingly to avoid context rot
+      ]
+    ]
+  ][
+    #figure(
+      image("../assets/img/RLM-1.png", width: 80%),
+      numbering: none,
+      caption: [
+        #set text(size: 8pt)
+        "Source: https://alexzhang13.github.io/blog/2025/rlm/"
+      ],
+    )
+  ]
+]
 
 
 // #my-new-section("Coffee break 2", "15.00")
@@ -239,33 +284,45 @@
 #slide[
   #title[Lab 2: Building a deep-agent with MCP]
   #set align(horizon)
-  - see the starter code at `exercises/lab_02_mcp_advanced/`
+  - see the starter code at `labs/lab_02_advanced.ipynb`
   - Tasks:
-    - implement a coding-agent
-    - build a deep-agent that can delegate coding tasks to the coding-agent
+    - implement a MAS with coding and web-search sub-agents
+    - use the "progressive disclosure" pattern
     - evaluate your system
-  - Bonus: Allow the system "to see"
+  - Bonus: Allow the system "to see".
+  - Bonus: Try evaluating against hard GAIA questions.
 ]
 
 
 #my-new-section("Conclusion", "16.45")
 
 #slide[
-
+  #title[Conclusion]
   #set align(horizon)
-
-  Some fun:
-  - https://gricha.dev/blog/the-highest-quality-codebase
-
-  Future trends:
-  - Small models like HRM are not frontier models (1-2 trillion paramters), but can do reasoning
-  - David Silver:
-    - "models will be trained with RL for computer use"
-    - with this the models will go beyond human data ("era of experience")
-  - RLMs: https://alexzhang13.github.io/blog/2025/rlm/
-
-  - More readings: https://arxiv.org/html/2401.03428v1
+  #block(inset: 2em)[
+    #item-by-item[
+      - Some fun: https://gricha.dev/blog/the-highest-quality-codebase
+      - Future trends:
+        - David Silver:
+          - "models will be trained with RL for computer use"
+          - "with this the models will go beyond human data: era of experience"
+      - Feedback
+    ]
+  ]
 ]
+
+// TODO: summarize the below:
+// https://x.com/karpathy/status/2002118205729562949?s=20
+#slide()[
+  #title[A. Karpathy's 2025 LLM Year in Review]
+  - Rise of RLVR (Reinforcement Learning from Verifiable Rewards): The standard training pipeline (Pretraining → SFT → RLHF) has evolved. The new key stage is RLVR, where models train against verifiable outcomes (like math or code execution). This allows them to "think" longer and develop reasoning strategies, similar to OpenAI's o1 and o3 models.
+  - "Jagged" Intelligence (Ghosts vs. Animals): Karpathy describes current AI as "ghosts" rather than "animals." Because they are not evolved for biological survival but optimized for specific rewards, their intelligence is "jagged"—they can be geniuses at complex tasks but fail at basic common sense or be easily "jailbroken."
+  - Vibe Coding: A shift in programming where users simply describe what they want in natural language ("vibes"), and the AI handles the actual implementation. This lowers the barrier to entry, allowing non-coders to build software and professionals to work faster.
+  - The App Layer (e.g., Cursor): A distinct "application layer" is emerging (like the Cursor IDE) that acts as a manager for the raw "college graduate" intelligence of LLMs. These apps handle context, tools, and the feedback loop to make the models actually useful for work.
+  - Benchmark Fatigue: There is growing skepticism toward standard benchmarks. Since models are now heavily optimized (or "benchmaxxed") for specific test sets, high scores no longer guarantee real-world utility.
+]
+
+
 
 // /*
 // = Appendix
