@@ -36,24 +36,24 @@ for dir in "${dirs[@]}"; do
 
     # Only uncomment specific magics: # %pip, # %restart, # %writefile, # %write_and_run
     # We use a unified regex that covers both exercises and labs requirements
-    sed -E 's/^# %(%?)(pip|restart|writefile|write_and_run)/%\1\2/g' "$f" >"$temp_file"
+    sed -E 's/^# %(%?)(pip|restart|writefile|write_and_run|mkdir)/%\1\2/g' "$f" >"$temp_file"
 
     # If student version, strip solutions from the temp file
     if [ "$STUDENT_VERSION" = true ]; then
       python3 -c "
-          import re
-          import sys
+import re
+import sys
 
-          file_path = '$temp_file'
-          try:
-          with open(file_path, 'r') as f:
-          content = f.read()
+file_path = '$temp_file'
+try:
+    with open(file_path, 'r') as f:
+        content = f.read()
 
-          def replacer(match):
-          indent = match.group(1)
-          # Align pass and markers with the captured indentation
-          # We include the solution markers as comments so students see where to fill in
-          return f'{indent}# <solution>\n{indent}# TODO: Implement this\n{indent}pass\n{indent}# </solution>'
+    def replacer(match):
+        indent = match.group(1)
+        # Align pass and markers with the captured indentation
+        # We include the solution markers as comments so students see where to fill in
+        return f'{indent}# <solution>\n{indent}# TODO: Implement this\n{indent}pass\n{indent}# </solution>'
 
     # Pattern: ^([ \t]*) captures indentation at start of line
     pattern = r'^([ \t]*)# <solution>.*?# </solution>'
@@ -61,12 +61,12 @@ for dir in "${dirs[@]}"; do
     new_content, count = re.subn(pattern, replacer, content, flags=re.DOTALL | re.MULTILINE)
 
     with open(file_path, 'w') as f:
-    f.write(new_content)
+        f.write(new_content)
 
-    except Exception as e:
+except Exception as e:
     print(f'Error stripping solutions from {file_path}: {e}', file=sys.stderr)
     sys.exit(1)
-    "
+"
     fi
 
     # Convert using percent format

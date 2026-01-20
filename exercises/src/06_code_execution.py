@@ -32,6 +32,7 @@ interpreter = LocalPythonExecutor(
         "datetime",
     ],
 )
+# here we could pass additional functions to the interpreter
 interpreter.send_tools({})
 interpreter.state["df"] = df
 interpreter("import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt")
@@ -39,6 +40,7 @@ interpreter("import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot 
 
 # Exercise 6.1: Define the `exec_python` tool
 # This tool should take a code string, execute it using the `interpreter`, and return the output.
+# Make sure to handle `InterpreterError`.
 # <solution>
 @tool
 def exec_python(code: str):
@@ -53,8 +55,6 @@ def exec_python(code: str):
         return f"Stdout:\n{str(interpreter.state['_print_outputs'])}\nOutput: {output}"
     except InterpreterError as e:
         return f"There was an error: {e}"
-
-
 # </solution>
 
 

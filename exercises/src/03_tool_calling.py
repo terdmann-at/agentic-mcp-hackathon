@@ -14,8 +14,7 @@ from langchain.messages import HumanMessage, ToolMessage
 from langchain.tools import tool
 
 # %%
-model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
-
+from llm import model
 
 # %% [markdown]
 # ## Tools
@@ -28,15 +27,16 @@ model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
 
 
 # %%
-# Exercise 3.1: Define a tool using the decorator
+# Exercise 3.1: Define a tool using the decorator. The tool should return the weather for a location.
+# You can simply return a string for now (e.g. "Cloudy, 15C").
 # <solution>
 @tool
-# </solution>
 def get_weather(location: str) -> str:
     """Get the weather for a location."""
     if "Berlin" in location:
         return "Cloudy, 15C"
     return "Sunny, 25C"
+# </solution>
 
 
 # %%

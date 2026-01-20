@@ -45,12 +45,14 @@ def create_vectorstore():
         return None
 
     # Exercise 2.2: Split documents
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    # Hint: Use `RecursiveCharacterTextSplitter`
     # <solution>
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     splits = text_splitter.split_documents(documents)
     # </solution>
 
-    # Exercise 2.3: Create vectorstore
+    # Exercise 2.3: Create vectorstore.
+    # Hint: Use the `InMemoryVectorStore` constructor.
     # <solution>
     vectorstore = InMemoryVectorStore.from_documents(
         documents=splits,
@@ -63,7 +65,6 @@ def create_vectorstore():
 # %%
 def retrieve(vectorstore, query: str):
     # Exercise 2.4: Implement a retriever using the vectorstore.
-    # Hint: Use `vectorstore.as_retriever()` and `.invoke(query)`
     # <solution>
     retriever = vectorstore.as_retriever()
     matching_docs = retriever.invoke(query)

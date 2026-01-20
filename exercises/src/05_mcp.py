@@ -197,7 +197,7 @@ def create_tool_calling_agent(
     return workflow.compile()
 
 
-# Initialize the entire agent, including MCP tools and workflow
+# Initialize the agent, including MCP tools and workflow
 def initialize_agent():
     """Initialize the agent with MCP tools"""
     # Create MCP tools from the configured servers

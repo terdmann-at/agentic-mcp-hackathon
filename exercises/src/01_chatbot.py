@@ -17,21 +17,12 @@
 # %%
 from databricks_langchain import ChatDatabricks
 from langchain.messages import AIMessage, HumanMessage
-
-model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
+from llm import model
 
 response = model.invoke("hi")
 print(response.content)
 
 
-# %% [markdown]
-# Now it's your turn. Solve the exercises below.
-#
-# To test your chatbot, run this on the terminal:
-#
-
-
-# %%
 # %%
 # Exercise 1: Console Chatbot
 #
@@ -39,6 +30,7 @@ print(response.content)
 #
 # Fill in the lines inside <solution></solution>.
 #
+
 
 def chat_shell():
     # Initialize chat history
@@ -69,13 +61,17 @@ def chat_shell():
 # Run the chatbot
 chat_shell()
 
-
-# %%
 # %% [markdown]
 # ## Exercise 2 (Bonus): Streamlit Chatbot
 # Use streamlit to build a simple chat interface.
+# Bonus points for using LangGraph.
 #
 # To test it, deploy the app.py to databricks apps using the UI.
+#
+# We'll need a couple files. That's why we create a directory first.
+# Then we create a requirements.txt file, an app.yaml file and finally the app.py file. 
+# The app.yaml file defines the command to run the app.py file.
+# The requirements.txt file defines the dependencies.
 
 # %%
 # %mkdir streamlit_app_01
@@ -93,11 +89,12 @@ chat_shell()
 # %%
 # %%writefile streamlit_app_01/app.py
 import streamlit as st
-from databricks_langchain import ChatDatabricks
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import AIMessage, HumanMessage
 
 st.title("Chatbot")
 
+# Exercise 2.1: Invoke the model with the message history
+# <solution>
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -112,16 +109,7 @@ if prompt := st.chat_input("What is up?"):
 
     with st.chat_message("assistant"):
         model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
-        
-        # Exercise 2.1: Invoke the model with the message history
-        # Hint: input to invoke should be st.session_state.messages
-        # <solution>
         response = model.invoke(st.session_state.messages)
-        # </solution>
-        
         st.markdown(response.content)
-        
-        # Exercise 2.2: Append the response to the session state messages
-        # <solution>
         st.session_state.messages.append(response)
-        # </solution>
+# </solution>

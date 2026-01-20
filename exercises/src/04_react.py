@@ -23,7 +23,7 @@ from langgraph.graph import END, START, StateGraph
 from typing_extensions import Annotated, TypedDict
 
 # %%
-model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
+from llm import model
 
 
 # %% [markdown]
@@ -206,7 +206,7 @@ for m in response["messages"]:
 # LangGraph also supports a functional API that relies on decorators.
 # This can be more intuitive for python developers.
 
-
+# %%
 def build_agent_func(tools):
     # Augment the LLM with tools
     tools_by_name = {tool.name: tool for tool in tools}
@@ -261,7 +261,7 @@ def build_agent_func(tools):
 
     return agent
 
-
+# %%
 agent = build_agent_func([add, multiply, divide])
 # Invoke
 for chunk in agent.stream(messages, stream_mode="updates"):
@@ -270,9 +270,8 @@ for chunk in agent.stream(messages, stream_mode="updates"):
 
 
 # %% [markdown]
-# # Exercise 4.10 (Bonus): Persistence
+# # Exercise 4.10 (Bonus): Turn the agent into a chatbot.
 #
-# Try asking what your last query was. How can we get this to work?
 # Hint: We need a checkpointer: https://docs.langchain.com/oss/python/langgraph/persistence#checkpoints
 #
 # <solution>
@@ -282,15 +281,10 @@ from langchain.agents import create_agent
 checkpointer = InMemorySaver()
 agent = create_agent(tools, checkpointer=checkpointer)
 
-# pass a config with a thread_id to the agent
-response_1 = agent.invoke({
-    "messages": [HumanMessage(content="Hello my name is Tore.")]}, 
-    config={"configurable": {"thread_id": "1"}})
-response_1["messages"][-1].pretty_print()
-
-# pass the same thread_id to continue the conversation
-response_2 = agent.invoke({
-    "messages": [HumanMessage(content="What is my name?")]}, 
-    config={"configurable": {"thread_id": "1"}})
-response_2["messages"][-1].pretty_print()
+while True:
+    user_input = input("User: ")
+    response = agent.invoke({
+        "messages": [HumanMessage(content=user_input)]}, 
+        config={"configurable": {"thread_id": "1"}})
+    response["messages"][-1].pretty_print()
 # </solution>

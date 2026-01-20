@@ -58,14 +58,14 @@ search_tool = DuckDuckGoSearchRun()
 
 
 # %%
-# Exercise 1: Define the State classes. Use either pydantic classes or `TypedDict`
+# Exercise 1.1: Define the State classes as described above. Use either pydantic classes or `TypedDict`.
+# Hint: Use `operator.add` to append new outputs to the list instead of overwriting.
 # <solution>
 class SubTaskState(TypedDict):
     """State for a single research worker agent."""
 
     topic: str
     result: str
-
 
 class ResearchState(TypedDict):
     """Global state for the entire graph."""
@@ -76,8 +76,7 @@ class ResearchState(TypedDict):
     research_outputs: Annotated[List[str], operator.add]
     final_report: str
 
-
-# </solution>
+# </solution
 
 
 class ResearchPlan(BaseModel):
@@ -185,6 +184,7 @@ def map_subtopics(state: ResearchState):
 
 
 # Exercise 3.2: Build the Graph
+# Hint: You will need add_conditional_edges to send the sub-topics to the workers.
 # <solution>
 workflow = StateGraph(ResearchState)
 
@@ -278,11 +278,13 @@ def should_continue(state: ResearchStateHITL):
     - If not approved -> Loop back to planner
     """
     if state.get("approved"):
-        # Map to workers
+        # Exercise 4.3: Send queries to research workers
+        # <solution>
         return [
             Send("research_worker", {"topic": sub_topic})
             for sub_topic in state["sub_topics"]
         ]
+        # </solution>
 
     # Loop back
     return "planner"
@@ -486,14 +488,14 @@ if not filtered_df.empty:
 
         print(f"\nProcessing Task: {task_id}")
 
-        # --- Agent 1: Deep Research ---
+        # Agent 1: Deep Research
         result_dr = app.invoke({"topic": question})
         predicted_dr = result_dr.get("final_report", "No report generated.")
         judge_resp_dr = query_judge_model(question, predicted_dr, truth, metadata)
         score_dr = extract_score(judge_resp_dr)
         print(f"Deep Research Score: {score_dr}")
 
-        # --- Agent 2: ReAct Baseline ---
+        # Agent 2: ReAct Baseline
         result_react = agent_react.invoke({"messages": [question]})
         predicted_react = result_react["messages"][-1].content
         judge_resp_react = query_judge_model(question, predicted_react, truth, metadata)
