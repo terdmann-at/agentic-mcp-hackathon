@@ -12,15 +12,13 @@
 import glob
 import os
 
-from databricks_langchain import ChatDatabricks, DatabricksEmbeddings
-from langchain.prompts import ChatPromptTemplate
-from langchain.vectorstores import InMemoryVectorStore
 from langchain_community.document_loaders import PyMuPDFLoader
+from langchain_community.vectorstores import InMemoryVectorStore
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# %%
-model = ChatDatabricks(endpoint="databricks-claude-sonnet-4-5")
-embed = DatabricksEmbeddings(endpoint="databricks-gte-large-en")
+from llm import embeddings as embed
+from llm import model
 
 
 # %%

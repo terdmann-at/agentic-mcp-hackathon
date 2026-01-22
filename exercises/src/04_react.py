@@ -16,7 +16,6 @@
 import operator
 from typing import Literal
 
-from databricks_langchain import ChatDatabricks
 from langchain.messages import AnyMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain.tools import BaseTool, tool
 from langgraph.graph import END, START, StateGraph
@@ -24,7 +23,6 @@ from typing_extensions import Annotated, TypedDict
 
 # %%
 from llm import model
-
 
 # %% [markdown]
 # ## Tools
@@ -206,6 +204,7 @@ for m in response["messages"]:
 # LangGraph also supports a functional API that relies on decorators.
 # This can be more intuitive for python developers.
 
+
 # %%
 def build_agent_func(tools):
     # Augment the LLM with tools
@@ -240,7 +239,7 @@ def build_agent_func(tools):
         return tool.invoke(tool_call)
 
     # Step 4: Define agent
-    @entrypoint(checkpointer=checkpointer)
+    @entrypoint()
     def agent(messages: list[BaseMessage]):
         model_response = call_llm(messages).result()
 
@@ -261,6 +260,7 @@ def build_agent_func(tools):
 
     return agent
 
+
 # %%
 agent = build_agent_func([add, multiply, divide])
 # Invoke
@@ -275,16 +275,17 @@ for chunk in agent.stream(messages, stream_mode="updates"):
 # Hint: We need a checkpointer: https://docs.langchain.com/oss/python/langgraph/persistence#checkpoints
 #
 # <solution>
-from langchain.checkpointers.memory import InMemorySaver
 from langchain.agents import create_agent
+from langgraph.checkpoint.memory import InMemorySaver
 
 checkpointer = InMemorySaver()
-agent = create_agent(tools, checkpointer=checkpointer)
+agent = create_agent(model=model, tools=tools, checkpointer=checkpointer)
 
 while True:
     user_input = input("User: ")
-    response = agent.invoke({
-        "messages": [HumanMessage(content=user_input)]}, 
-        config={"configurable": {"thread_id": "1"}})
+    response = agent.invoke(
+        {"messages": [HumanMessage(content=user_input)]},
+        config={"configurable": {"thread_id": "1"}},
+    )
     response["messages"][-1].pretty_print()
 # </solution>

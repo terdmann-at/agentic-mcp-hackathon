@@ -9,7 +9,6 @@
 # %restart_python
 
 # %%
-from databricks_langchain import ChatDatabricks
 from langchain.messages import HumanMessage, ToolMessage
 from langchain.tools import tool
 
@@ -36,6 +35,8 @@ def get_weather(location: str) -> str:
     if "Berlin" in location:
         return "Cloudy, 15C"
     return "Sunny, 25C"
+
+
 # </solution>
 
 

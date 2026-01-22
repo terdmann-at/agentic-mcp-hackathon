@@ -15,8 +15,8 @@
 # to invoke it.
 
 # %%
-from databricks_langchain import ChatDatabricks
 from langchain.messages import AIMessage, HumanMessage
+
 from llm import model
 
 response = model.invoke("hi")
@@ -69,7 +69,7 @@ chat_shell()
 # To test it, deploy the app.py to databricks apps using the UI.
 #
 # We'll need a couple files. That's why we create a directory first.
-# Then we create a requirements.txt file, an app.yaml file and finally the app.py file. 
+# Then we create a requirements.txt file, an app.yaml file and finally the app.py file.
 # The app.yaml file defines the command to run the app.py file.
 # The requirements.txt file defines the dependencies.
 

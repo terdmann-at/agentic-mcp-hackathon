@@ -5,7 +5,7 @@
 #
 
 # %%
-# %pip install smolagents
+# %pip install smolagents langchain databricks-langchain pandas scikit-learn
 # %restart_python
 
 # %%
@@ -13,9 +13,10 @@ import pandas as pd
 from langchain.agents import create_agent
 from langchain.messages import AIMessage, HumanMessage
 from langchain.tools import tool
-from llm import model as llm
 from smolagents import LocalPythonExecutor
 from smolagents.local_python_executor import InterpreterError
+
+from llm import model as llm
 
 df = pd.read_csv(
     "https://raw.githubusercontent.com/datasciencedojo/datasets/refs/heads/master/titanic.csv"
@@ -55,6 +56,8 @@ def exec_python(code: str):
         return f"Stdout:\n{str(interpreter.state['_print_outputs'])}\nOutput: {output}"
     except InterpreterError as e:
         return f"There was an error: {e}"
+
+
 # </solution>
 
 
@@ -101,6 +104,7 @@ for msg in response["messages"]:
 import uuid
 
 from langgraph.store.memory import InMemoryStore
+
 from llm import embedding_dimensions, embeddings
 
 # <solution>
