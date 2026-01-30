@@ -4,10 +4,10 @@ This repo contains the slides (typst source in `/src`) and exercises (see `exerc
 
 ## Dependencies
 
-For the slides, you'll need `typst``: https://github.com/typst/typst
-For the notebooks, you'll need `uv`: https://docs.astral.sh/uv/getting-started/installation
+* For the slides, you'll need `typst`: https://github.com/typst/typst
+* For the notebooks, you'll need `uv`: https://docs.astral.sh/uv/getting-started/installation
 
-Alternatively, if you have docker, you can compile the notebooks by starting a docker container that has uv:
+Alternatively, if you don't want to install anything have docker, you can compile the notebooks by starting a docker container that has uv:
 
     docker run -v ".:/app" -w /app --rm -it ghcr.io/astral-sh/uv:debian bash
 
